@@ -1,0 +1,10 @@
+{
+	"id": "sentilis-plugin",
+	"name": "Sentilis",
+	"version": "0.0.1",
+	"minAppVersion": "1.5.0",
+	"description": "Publish content from Obsidian to Sentilis.",
+	"author": "Waskalle",
+	"authorUrl": "https://github.com/Waskalle-Bahena",
+	"isDesktopOnly": false
+}
