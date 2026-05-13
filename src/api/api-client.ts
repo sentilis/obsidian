@@ -60,11 +60,6 @@ export class ApiClient {
 			};
 		} catch (error: any) {
 
-			console.log(
-				'REQUEST ERROR',
-				error
-			);
-
 			console.error(error);
 
 			return {
@@ -126,11 +121,6 @@ export class ApiClient {
 				token
 			);
 
-		console.log(
-			'PRESS LIST',
-			result
-		);
-
 		return result;
 	}
 
@@ -163,11 +153,6 @@ export class ApiClient {
 				token
 			);
 
-		console.log(
-			'PRESS DETAIL FULL',
-			result
-		);
-
 		return result;
 	}
 
@@ -181,11 +166,6 @@ export class ApiClient {
 				'GET',
 				token
 			);
-
-		console.log(
-			'MARKET DETAIL FULL',
-			result
-		);
 
 		return result;
 	}

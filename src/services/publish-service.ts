@@ -21,6 +21,7 @@ import {
 	toProductUpload,
 } from '@sentilis/core/market';
 
+
 export class PublishService {
 	plugin: SentilisPluginInterface;
 
@@ -87,6 +88,33 @@ export class PublishService {
 				frontmatter.slug ||
 				this.slugify(name);
 
+				const tags = Array.isArray(
+					frontmatter.tags
+				)
+					? frontmatter.tags
+					: typeof frontmatter.tags ===
+						'string'
+						? frontmatter.tags
+								.split(',')
+								.map((tag: string) =>
+									tag.trim()
+								)
+						: [];
+
+				const authors = Array.isArray(
+					frontmatter.authors
+				)
+					? frontmatter.authors
+					: typeof frontmatter.authors ===
+						'string'
+						? frontmatter.authors
+								.split(',')
+								.map(
+									(author: string) =>
+										author.trim()
+								)
+						: [];
+
 			const payload: PressPublishPayload =
 				{
 					name,
@@ -105,6 +133,14 @@ export class PublishService {
 					visibility:
 						frontmatter.visibility ||
 						'public',
+						
+					tags,
+					authors,
+
+					image:
+						frontmatter.cover ||
+						frontmatter.image ||
+						null,
 				};
 
 			return payload;
@@ -175,6 +211,12 @@ export class PublishService {
 				''
 			);
 
+		const image =
+			frontmatter.cover ||
+			frontmatter.image ||
+			null;
+		
+
 		return {
 			name,
 
@@ -201,6 +243,8 @@ export class PublishService {
 				'public',
 
 			content: markdownContent,
+			
+			image,
 		};
 	}
 
@@ -254,11 +298,14 @@ export class PublishService {
 						visibility:
 							payload.visibility as any,
 
-						image: null,
+						image:
+							payload.image || null,
 
-						tags: [],
+						tags:
+							payload.tags || [],
 
-						authors: [],
+						authors:
+							payload.authors || [],
 					},
 
 					images:
@@ -266,9 +313,17 @@ export class PublishService {
 							normalizedContent
 						),
 
-					videos: [],
+					videos:
+						this.plugin.assetService.extractVideoLinks(
+							normalizedContent
+						),
 
-					links: [],
+					links:
+						this.plugin.assetService.extractMarkdownLinks(
+							payload.content,
+							file
+						),
+
 				};
 
 			const result: PressCreateResult =
@@ -452,11 +507,13 @@ export class PublishService {
 								payload.visibility as any,
 
 							image:
-								null,
+								payload.image || null,
 
-							tags: [],
+							tags:
+								payload.tags || [],
 
-							authors: [],
+							authors:
+								payload.authors || [],
 						},
 
 						images:
@@ -464,9 +521,16 @@ export class PublishService {
 								normalizedContent
 							),
 
-						videos: [],
+						videos:
+							this.plugin.assetService.extractVideoLinks(
+								normalizedContent
+							),
 
-						links: [],
+						links:
+							this.plugin.assetService.extractMarkdownLinks(
+								payload.content,
+								file
+							),
 					};
 				};
 
@@ -699,7 +763,8 @@ export class PublishService {
 						visibility:
 							validated.visibility,
 
-						image: null,
+						image:
+							validated.image || null,
 
 						attachment: null,
 					},
@@ -712,9 +777,16 @@ export class PublishService {
 							normalizedContent
 						),
 
-					videos: [],
+					videos:
+						this.plugin.assetService.extractVideoLinks(
+							normalizedContent
+						),
 
-					links: [],
+					links:
+						this.plugin.assetService.extractMarkdownLinks(
+							validated.content,
+							file
+						),
 				},
 			} as any);
 

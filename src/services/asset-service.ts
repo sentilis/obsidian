@@ -68,6 +68,101 @@ export class AssetService {
 		}));
 	}
 
+	extractVideoLinks(
+		content: string
+	) {
+		const links: {
+			src: string;
+		}[] = [];
+
+		const regex =
+			/(https?:\/\/[^\s]+(?:youtube\.com|youtu\.be|vimeo\.com)[^\s]*)/g;
+
+		let match;
+
+		while (
+			(match =
+				regex.exec(
+					content
+				)) !== null
+		) {
+			links.push({
+				src: match[1],
+			});
+		}
+
+		return links;
+	}
+
+	extractMarkdownLinks(
+		content: string,
+		file: TFile
+	) {
+		const links: {
+			label: string;
+			targetSlug: string;
+		}[] = [];
+
+		const regex =
+			/\[([^\]]+)\]\((.*?)\)/g;
+
+		let match;
+
+		while (
+			(match =
+				regex.exec(
+					content
+				)) !== null
+		) {
+			const label =
+				match[1];
+
+			const target =
+				match[2];
+
+			if (
+				target.startsWith(
+					'http'
+				)
+			) {
+				continue;
+			}
+
+			const linkedFile =
+				this.plugin.app.metadataCache.getFirstLinkpathDest(
+					target,
+					file.path
+				);
+
+			if (
+				!(
+					linkedFile instanceof
+					TFile
+				)
+			) {
+				continue;
+			}
+
+			links.push({
+				label,
+
+				targetSlug:
+					linkedFile.basename
+						.toLowerCase()
+						.replace(
+							/[^\w\s-]/g,
+							''
+						)
+						.replace(
+							/\s+/g,
+							'-'
+						),
+			});
+		}
+
+		return links;
+	}
+
     normalizeMarkdown(
 		content: string
 	): string {
