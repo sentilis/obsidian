@@ -25,6 +25,7 @@ export interface PressDetailItem {
 	visibility: string;
 	category?: string | null;
 	url?: string;
+	createdAt?: string;
 
 	children?: {
 		id: string;

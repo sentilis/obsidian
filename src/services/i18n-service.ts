@@ -1,3 +1,5 @@
+import { moment } from 'obsidian';
+
 import { translations } from '../i18n/translations';
 
 import { SentilisPluginInterface } from '../types/plugin';
@@ -5,13 +7,22 @@ import { SentilisPluginInterface } from '../types/plugin';
 export class I18nService {
 	plugin: SentilisPluginInterface;
 
-	constructor(plugin: SentilisPluginInterface) {
+	constructor(
+		plugin: SentilisPluginInterface
+	) {
 		this.plugin = plugin;
 	}
 
 	t(key: string): string {
+		const obsidianLanguage =
+			moment.locale();
+
 		const language =
-			this.plugin.settings.language;
+			translations[
+				obsidianLanguage
+			]
+				? obsidianLanguage
+				: 'en';
 
 		const keys = key.split('.');
 

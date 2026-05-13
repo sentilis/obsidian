@@ -1,57 +1,78 @@
-import { Notice, requestUrl } from 'obsidian';
+import {
+	Notice,
+	requestUrl,
+} from 'obsidian';
 
-import { API_CONFIG } from './endpoints';
+import {
+	API_CONFIG,
+	AUTH_ENDPOINT,
+	MARKET_ENDPOINT,
+	PRESS_ENDPOINT,
+} from './endpoints';
+
 import { ApiResponse } from './types';
+
 import { basicAuth } from './auth';
-import { AUTH_ENDPOINT, MARKET_ENDPOINT, PRESS_ENDPOINT } from './endpoints';
+
 import {
 	PressItem,
 	ProductItem,
-	PressDetailItem
+	PressDetailItem,
 } from '../types/content';
 
 export class ApiClient {
-	async get<T>(
-		endpoint: string,
-		token?: string
+	private async request<T>(
+		url: string,
+		method: string = 'GET',
+		token?: string,
+		body?: BodyInit
 	): Promise<ApiResponse<T>> {
 		try {
-			const response = await fetch(
-				`${API_CONFIG.baseUrl}${endpoint}`,
-				{
-					method: 'GET',
+			const response =
+				await requestUrl({
+					url: `${API_CONFIG.baseUrl}${url}`,
+
+					method,
+
 					headers: {
-						'Content-Type': 'application/json',
 						...(token && {
-							Authorization: `Bearer ${token}`,
+							Authorization:
+								basicAuth(token),
 						}),
+
+						...(body instanceof
+						FormData
+							? {}
+							: {
+									'Content-Type':
+										'application/json',
+								}),
 					},
-				}
-			);
 
-			if (!response.ok) {
-				return {
-					success: false,
-					error: `HTTP ${response.status}`,
-				};
-			}
-
-			const data = await response.json();
+					body,
+				});
 
 			return {
 				success: true,
-				data,
-			};
-		} catch (error) {
-			console.error(error);
 
-			new Notice(
-				'Network error while connecting to Sentilis'
+				data: response.json
+					.data,
+			};
+		} catch (error: any) {
+
+			console.log(
+				'REQUEST ERROR',
+				error
 			);
+
+			console.error(error);
 
 			return {
 				success: false,
-				error: 'Network error',
+
+				error:
+					error?.message ||
+					'Request failed',
 			};
 		}
 	}
@@ -63,24 +84,27 @@ export class ApiClient {
 			const response =
 				await requestUrl({
 					url: `${API_CONFIG.baseUrl}${AUTH_ENDPOINT}`,
+
 					method: 'GET',
+
 					headers: {
 						Authorization:
 							basicAuth(token),
 					},
 				});
 
-			const json = response.json;
-
 			return {
 				success: true,
-				data: json.data.username,
+
+				data: response.json
+					.data.username,
 			};
 		} catch (error: any) {
 			console.error(error);
 
 			return {
 				success: false,
+
 				error:
 					error?.message ||
 					'Authentication failed',
@@ -90,128 +114,80 @@ export class ApiClient {
 
 	async getPressList(
 		token: string
-	): Promise<ApiResponse<PressItem[]>> {
-		try {
-			const response =
-				await requestUrl({
-					url: `${API_CONFIG.baseUrl}${PRESS_ENDPOINT}`,
-					method: 'GET',
-					headers: {
-						Authorization:
-							basicAuth(token),
-					},
-				});
+	): Promise<
+		ApiResponse<PressItem[]>
+	> {
+		const result =
+			await this.request<
+				PressItem[]
+			>(
+				`${PRESS_ENDPOINT}?visibility=public,private,protected,prime`,
+				'GET',
+				token
+			);
 
-			return {
-				success: true,
-				data: response.json.data,
-			};
-		} catch (error: any) {
-			console.error(error);
+		console.log(
+			'PRESS LIST',
+			result
+		);
 
-			return {
-				success: false,
-				error:
-					error?.message ||
-					'Failed to load press',
-			};
-		}
+		return result;
 	}
 
 	async getMarketList(
 		token: string
-	): Promise<ApiResponse<ProductItem[]>> {
-		try {
-			const response =
-				await requestUrl({
-					url: `${API_CONFIG.baseUrl}${MARKET_ENDPOINT}`,
-					method: 'GET',
-					headers: {
-						Authorization:
-							basicAuth(token),
-					},
-				});
-
-			return {
-				success: true,
-				data: response.json.data,
-			};
-		} catch (error: any) {
-			console.error(error);
-
-			return {
-				success: false,
-				error:
-					error?.message ||
-					'Failed to load products',
-			};
-		}
+	): Promise<
+		ApiResponse<ProductItem[]>
+	> {
+		return this.request<
+			ProductItem[]
+		>(
+			MARKET_ENDPOINT,
+			'GET',
+			token
+		);
 	}
 
 	async getPressDetail(
 		token: string,
 		id: string
-	): Promise<ApiResponse<PressDetailItem>> {
-		try {
-			const response =
-				await requestUrl({
-					url: `${API_CONFIG.baseUrl}${PRESS_ENDPOINT}/${id}`,
-					method: 'GET',
-					headers: {
-						Authorization:
-							basicAuth(token),
-					},
-				});
+	): Promise<
+		ApiResponse<PressDetailItem>
+	> {
+		const result =
+			await this.request<
+				PressDetailItem
+			>(
+				`${PRESS_ENDPOINT}/${id}`,
+				'GET',
+				token
+			);
 
-			return {
-				success: true,
-				data: response.json.data,
-			};
-		} catch (error: any) {
-			console.error(error);
+		console.log(
+			'PRESS DETAIL FULL',
+			result
+		);
 
-			return {
-				success: false,
-				error:
-					error?.message ||
-					'Failed to load press detail',
-			};
-		}
+		return result;
 	}
 
 	async getProduct(
 		token: string,
 		id: string
 	): Promise<any> {
-		try {
-			const response =
-				await requestUrl({
-					url: `${API_CONFIG.baseUrl}/openapi/v1/market/${id}`,
+		const result =
+			await this.request(
+				`${MARKET_ENDPOINT}/${id}`,
+				'GET',
+				token
+			);
 
-					method: 'GET',
+		console.log(
+			'MARKET DETAIL FULL',
+			result
+		);
 
-					headers: {
-						Authorization:
-							basicAuth(token),
-					},
-				});
-
-			return {
-				success: true,
-
-				data: response.json.data,
-			};
-		} catch (error: any) {
-			console.error(error);
-
-			return {
-				success: false,
-
-				error:
-					error?.message ||
-					'Failed to get product',
-			};
-		}
+		return result;
 	}
 
 	async uploadPress(
@@ -245,13 +221,11 @@ export class ApiClient {
 				};
 			}
 
-			const json =
-				JSON.parse(text);
-
 			return {
 				success: true,
 
-				data: json.data,
+				data: JSON.parse(text)
+					.data,
 			};
 		} catch (error: any) {
 			console.error(error);
@@ -266,14 +240,14 @@ export class ApiClient {
 		}
 	}
 
-		async uploadProduct(
+	async uploadProduct(
 		token: string,
 		formData: FormData
 	): Promise<any> {
 		try {
 			const response =
 				await fetch(
-					`${API_CONFIG.baseUrl}/openapi/v1/market`,
+					`${API_CONFIG.baseUrl}${MARKET_ENDPOINT}`,
 					{
 						method: 'POST',
 
@@ -320,69 +294,21 @@ export class ApiClient {
 		token: string,
 		id: string
 	): Promise<any> {
-		try {
-			const response =
-				await requestUrl({
-					url: `${API_CONFIG.baseUrl}/openapi/v1/press/${id}`,
-
-					method: 'DELETE',
-
-					headers: {
-						Authorization:
-							basicAuth(token),
-					},
-				});
-
-			return {
-				success: true,
-
-				data: response.json,
-			};
-		} catch (error: any) {
-			console.error(error);
-
-			return {
-				success: false,
-
-				error:
-					error?.message ||
-					'Failed to delete press',
-			};
-		}
+		return this.request(
+			`${PRESS_ENDPOINT}/${id}`,
+			'DELETE',
+			token
+		);
 	}
 
 	async removeProduct(
 		token: string,
 		id: string
 	): Promise<any> {
-		try {
-			const response =
-				await requestUrl({
-					url: `${API_CONFIG.baseUrl}/openapi/v1/market/${id}`,
-
-					method: 'DELETE',
-
-					headers: {
-						Authorization:
-							basicAuth(token),
-					},
-				});
-
-			return {
-				success: true,
-
-				data: response.json,
-			};
-		} catch (error: any) {
-			console.error(error);
-
-			return {
-				success: false,
-
-				error:
-					error?.message ||
-					'Failed to delete product',
-			};
-		}
+		return this.request(
+			`${MARKET_ENDPOINT}/${id}`,
+			'DELETE',
+			token
+		);
 	}
 }

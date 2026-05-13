@@ -25,51 +25,11 @@ export class SentilisSettingTab extends PluginSettingTab {
 		});
 
 		new Setting(containerEl)
-			.setName(
-				this.plugin.t('settings.language')
-			)
-			.setDesc(this.plugin.t('settings.selectLanguage'))
-			.addDropdown((dropdown) => {
-				dropdown
-					.addOption('en', 'English')
-					.addOption('es', 'Spanish')
-					.setValue(this.plugin.settings.language)
-					.onChange(async (value) => {
-						this.plugin.settings.language =
-							value as 'en' | 'es';
-
-						await this.plugin.saveSettings();
-
-						this.display();
-
-						this.app.workspace
-							.getLeavesOfType(
-								SENTILIS_VIEW_TYPE
-							)
-							.forEach((leaf) => {
-								const view: any = leaf.view;
-
-								if (
-									view &&
-									typeof view.render ===
-										'function'
-								) {
-									view.render();
-								}
-							});
-					});
-			});
-
-		containerEl.createEl('h3', {
-			text: this.plugin.t('settings.profiles'),
-		});
-
-		new Setting(containerEl)
-			.setName(this.plugin.t('settings.addProfile'))
-			.setDesc(this.plugin.t('settings.addProfileDesc'))
+			.setName(this.plugin.t('addProfile.addNewToken'))
+			.setDesc(this.plugin.t('addProfile.addNewTokenDesc'))
 			.addButton((button) => {
 				button
-					.setButtonText(this.plugin.t('settings.addProfile'))
+					.setButtonText(this.plugin.t('addProfile.addNewToken'))
 					.setCta()
 					.onClick(() => {
 						new AddProfileModal(
@@ -81,7 +41,7 @@ export class SentilisSettingTab extends PluginSettingTab {
 						).open();
 					});
 			});
-
+			
 		if (this.plugin.settings.profiles.length > 0) {
 			new Setting(containerEl)
 				.setName(this.plugin.t('settings.defaultProfile'))
@@ -122,7 +82,15 @@ export class SentilisSettingTab extends PluginSettingTab {
 				});
 		}
 
-        this.plugin.settings.profiles.forEach(
+
+
+		containerEl.createEl('hr');
+
+		containerEl.createEl('h3', {
+			text: this.plugin.t('settings.profiles'),
+		});
+
+		 this.plugin.settings.profiles.forEach(
 			(profile) => {
 				const profileSetting = new Setting(
 					containerEl

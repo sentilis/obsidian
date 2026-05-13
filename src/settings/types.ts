@@ -7,5 +7,4 @@ export interface SentilisProfile {
 export interface SentilisPluginSettings {
 	defaultProfileId: string | null;
 	profiles: SentilisProfile[];
-	language: 'en' | 'es';
 }

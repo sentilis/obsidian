@@ -1,5 +1,3 @@
-import { Notice } from 'obsidian';
-
 import { SentilisPluginInterface } from '../types/plugin';
 
 export class AuthService {
@@ -21,11 +19,6 @@ export class AuthService {
 			!result.success ||
 			!result.data
 		) {
-			new Notice(
-				result.error ||
-					'Authentication failed'
-			);
-
 			return null;
 		}
 

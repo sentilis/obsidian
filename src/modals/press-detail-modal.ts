@@ -2,9 +2,11 @@ import {
 	App,
 	Modal,
 	Notice,
+	setIcon,
 } from 'obsidian';
 
 import { PressDetailItem } from '../types/content';
+
 import { SentilisPluginInterface } from '../types/plugin';
 
 export class PressDetailModal extends Modal {
@@ -20,6 +22,7 @@ export class PressDetailModal extends Modal {
 		super(app);
 
 		this.plugin = plugin;
+
 		this.pressId = pressId;
 	}
 
@@ -28,11 +31,13 @@ export class PressDetailModal extends Modal {
 
 		contentEl.empty();
 
-		contentEl.createEl('h2', {
-			text: this.plugin.t(
-				'pressDetail.loading'
-			),
-		});
+		contentEl.addClass(
+			'sentilis-premium-modal'
+		);
+
+		this.modalEl.addClass(
+			'sentilis-large-modal'
+		);
 
 		const profile =
 			this.plugin.getCurrentProfile();
@@ -75,79 +80,236 @@ export class PressDetailModal extends Modal {
 		const item: PressDetailItem =
 			result.data;
 
-		contentEl.createEl('h2', {
+		const header =
+			contentEl.createDiv({
+				cls: 'sentilis-premium-header',
+			});
+
+		const iconWrapper =
+			header.createDiv({
+				cls: 'sentilis-premium-icon',
+			});
+
+		setIcon(
+			iconWrapper,
+			'file-text'
+		);
+
+		header.createEl('h1', {
 			text: item.name,
+			cls: 'sentilis-premium-title',
 		});
 
-		contentEl.createEl('p', {
-			text: `${this.plugin.t(
+		const meta =
+			contentEl.createDiv({
+				cls: 'sentilis-premium-meta',
+			});
+
+		const createMetaItem = (
+			icon: string,
+			label: string,
+			value: string,
+			status: boolean = false
+		) => {
+			const itemEl =
+				meta.createDiv({
+					cls: 'sentilis-meta-item',
+				});
+
+			const top =
+				itemEl.createDiv({
+					cls: 'sentilis-meta-top',
+				});
+
+			const iconEl =
+				top.createSpan();
+
+			setIcon(iconEl, icon);
+
+			top.createSpan({
+				text: label,
+			});
+
+			itemEl.createEl('strong', {
+				text: value,
+				cls: status
+					? 'sentilis-status-success'
+					: '',
+			});
+		};
+
+		createMetaItem(
+			'circle-dot',
+			this.plugin.t(
 				'pressDetail.status'
-			)}: ${item.status}`,
-		});
+			),
+			item.status || '-',
+			true
+		);
 
-		contentEl.createEl('p', {
-			text: `${this.plugin.t(
+		createMetaItem(
+			'globe',
+			this.plugin.t(
 				'pressDetail.visibility'
-			)}: ${item.visibility}`,
-		});
+			),
+			item.visibility || '-'
+		);
 
-		if (item.category) {
-			contentEl.createEl('p', {
-				text: `${this.plugin.t(
-					'pressDetail.category'
-				)}: ${item.category}`,
-			});
-		}
+		createMetaItem(
+			'folder',
+			this.plugin.t(
+				'pressDetail.category'
+			),
+			item.category || '-'
+		);
 
-		if (item.createdAt) {
-			contentEl.createEl('p', {
-				text: `${this.plugin.t(
-					'pressDetail.createdAt'
-				)}: ${new Date(
-					item.createdAt
-				).toLocaleString()}`,
+		createMetaItem(
+			'calendar',
+			this.plugin.t(
+				'pressDetail.createdAt'
+			),
+			item.createdAt
+				? new Date(
+						item.createdAt
+				  ).toLocaleString()
+				: '-'
+		);
+
+		const divider =
+			contentEl.createDiv({
+				cls: 'sentilis-premium-divider',
 			});
-		}
 
 		if (item.url) {
-			const linkEl =
-				contentEl.createEl('a', {
+			const actions =
+				contentEl.createDiv({
+					cls: 'sentilis-premium-actions',
+				});
+
+			const button =
+				actions.createEl('a', {
 					text: this.plugin.t(
 						'pressDetail.openUrl'
 					),
 
 					href: item.url,
+
+					cls: 'sentilis-premium-btn',
 				});
 
-			linkEl.target = '_blank';
+			button.target =
+				'_blank';
+
+			const btnIcon =
+				button.createSpan({
+					cls: 'sentilis-btn-icon',
+				});
+
+			setIcon(
+				btnIcon,
+				'external-link'
+			);
 		}
 
 		if (
 			item.children &&
 			item.children.length > 0
 		) {
-			contentEl.createEl('h3', {
-				text: this.plugin.t(
-					'pressDetail.children'
-				),
-			});
+			const childrenHeader =
+				contentEl.createDiv({
+					cls: 'sentilis-children-premium-header',
+				});
+
+			childrenHeader.createEl(
+				'h2',
+				{
+					text: this.plugin.t(
+						'pressDetail.children'
+					),
+				}
+			);
+
+			childrenHeader.createEl(
+				'span',
+				{
+					text: String(
+						item.children.length
+					),
+
+					cls: 'sentilis-children-badge',
+				}
+			);
+
+			const list =
+				contentEl.createDiv({
+					cls: 'sentilis-premium-list',
+				});
 
 			item.children.forEach(
 				(child) => {
-					const childEl =
-						contentEl.createDiv({
-							cls: 'sentilis-child-item',
+					const row =
+						list.createDiv({
+							cls: 'sentilis-premium-row',
 						});
 
-					childEl.createEl('strong', {
+					const left =
+						row.createDiv({
+							cls: 'sentilis-premium-row-left',
+						});
+
+					const docIcon =
+						left.createSpan({
+							cls: 'sentilis-doc-icon',
+						});
+
+					setIcon(
+						docIcon,
+						'file-text'
+					);
+
+					left.createEl('span', {
 						text: child.name,
+						cls: 'sentilis-row-title',
 					});
 
-					childEl.createEl('small', {
-						text: `${child.status ?? ''} ${
-							child.visibility ?? ''
-						}`,
-					});
+					const right =
+						row.createDiv({
+							cls: 'sentilis-premium-row-right',
+						});
+
+					if (child.status) {
+						right.createEl(
+							'span',
+							{
+								text: child.status,
+
+								cls: 'sentilis-premium-pill',
+							}
+						);
+					}
+
+					if (
+						child.visibility
+					) {
+						right.createEl(
+							'span',
+							{
+								text: child.visibility,
+
+								cls: 'sentilis-premium-visibility',
+							}
+						);
+					}
+
+					const chevron =
+						right.createSpan({
+							cls: 'sentilis-chevron',
+						});
+
+					setIcon(
+						chevron,
+						'chevron-right'
+					);
 				}
 			);
 		}

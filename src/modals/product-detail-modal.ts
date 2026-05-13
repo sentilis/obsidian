@@ -1,6 +1,7 @@
 import {
 	App,
 	Modal,
+	setIcon,
 } from 'obsidian';
 
 import { SentilisPluginInterface } from '../types/plugin';
@@ -47,72 +48,138 @@ export class ProductDetailModal extends Modal {
 
 			contentEl.empty();
 
-			contentEl.createEl('h2', {
-				text: product.name,
-			});
-
-			contentEl.createEl('p', {
-				text: `${this.plugin.t(
-					'productModal.slug'
-				)}: ${product.slug}`,
-			});
-
-			if (product.createdAt) {
-				contentEl.createEl('p', {
-					text: `${this.plugin.t(
-						'marketDetail.createdAt'
-					)}: ${new Date(
-						product.createdAt
-					).toLocaleString()}`,
+			const header =
+				contentEl.createDiv({
+					cls: 'sentilis-premium-header',
 				});
-			}
 
-			contentEl.createEl('p', {
-				text: `${this.plugin.t(
-					'productModal.kind'
-				)}: ${product.kind}`,
+			const iconWrapper =
+				header.createDiv({
+					cls: 'sentilis-premium-icon',
+				});
+
+			setIcon(
+				iconWrapper,
+				'package'
+			);
+
+			header.createEl('h1', {
+				text: product.name,
+				cls: 'sentilis-premium-title',
 			});
 
-			contentEl.createEl('p', {
-				text: `${this.plugin.t(
-					'productModal.status'
-				)}: ${product.status}`,
-			});
+			const meta =
+				contentEl.createDiv({
+					cls: 'sentilis-premium-meta',
+				});
 
-			contentEl.createEl('p', {
-				text: `${this.plugin.t(
-					'productModal.visibility'
-				)}: ${product.visibility}`,
-			});
+			const createMetaItem = (
+				icon: string,
+				label: string,
+				value: string,
+				status: boolean = false
+			) => {
+				const itemEl =
+					meta.createDiv({
+						cls: 'sentilis-meta-item',
+					});
+
+				const top =
+					itemEl.createDiv({
+						cls: 'sentilis-meta-top',
+					});
+
+				const iconEl =
+					top.createSpan();
+
+				setIcon(iconEl, icon);
+
+				top.createSpan({
+					text: label,
+				});
+
+				itemEl.createEl('strong', {
+					text: value,
+
+					cls: status
+						? 'sentilis-status-success'
+						: '',
+				});
+			};
 
 			const currencySymbol =
 				typeof product.currency ===
 				'object'
-					? product.currency.symbol || ''
+					? product.currency.symbol ||
+					''
 					: product.currency || '';
 
 			const currencyName =
 				typeof product.currency ===
 				'object'
-					? product.currency.name || ''
+					? product.currency.name ||
+					''
 					: '';
 
-			contentEl.createEl('p', {
-				text: `${this.plugin.t(
+			createMetaItem(
+				'badge-dollar-sign',
+				this.plugin.t(
 					'productModal.price'
-				)}: ${currencySymbol}${product.price} ${currencyName}`,
-			});
+				),
+				`${currencySymbol}${product.price} ${currencyName}`
+			);
+
+			createMetaItem(
+				'package',
+				this.plugin.t(
+					'productModal.kind'
+				),
+				product.kind || '-'
+			);
+
+			createMetaItem(
+				'circle-dot',
+				this.plugin.t(
+					'productModal.status'
+				),
+				product.status || '-',
+				true
+			);
+
+			createMetaItem(
+				'globe',
+				this.plugin.t(
+					'productModal.visibility'
+				),
+				product.visibility || '-'
+			);
 
 			if (product.category) {
-				contentEl.createEl(
-					'p',
-					{
-						text: `${this.plugin.t(
-							'productModal.category'
-						)}: ${product.category}`,
-					}
+				createMetaItem(
+					'folder',
+					this.plugin.t(
+						'productModal.category'
+					),
+					product.category
 				);
 			}
+
+			if (product.createdAt) {
+				createMetaItem(
+					'calendar',
+					this.plugin.t(
+						'marketDetail.createdAt'
+					),
+					new Date(
+						product.createdAt
+					).toLocaleString()
+				);
+			}
+
+			contentEl.createDiv({
+				cls: 'sentilis-premium-divider',
+			});
+
 
 			if (product.url) {
 				const link =

@@ -29,6 +29,26 @@ export class PublishService {
 		this.plugin = plugin;
 	}
 
+	private slugify(
+		value: string
+	): string {
+		return value
+			.toLowerCase()
+			.trim()
+			.replace(
+				/[^\w\s-]/g,
+				''
+			)
+			.replace(
+				/\s+/g,
+				'-'
+			)
+			.replace(
+				/--+/g,
+				'-'
+			);
+	}
+
 	private stripFrontmatter(
 		content: string
 	): string {
@@ -53,61 +73,24 @@ export class PublishService {
 				);
 
 			const frontmatter =
-				cache?.frontmatter;
+				cache?.frontmatter || {};
 
-			if (!frontmatter) {
-				new Notice(
-					[
-						'This markdown file is missing Sentilis frontmatter.',
-						'',
-						'Add this at the top of your file:',
-						'',
-						'---',
-						'name: My Post',
-						'slug: my-post',
-						'status: published',
-						'visibility: public',
-						'---',
-					].join('\n'),
-					10000
-				);
+			const inferredName =
+				file.basename;
 
-				return null;
-			}
+			const name =
+				frontmatter.name ||
+				inferredName;
 
-			if (!frontmatter.name) {
-				new Notice(
-					[
-						'Missing required field: "name"',
-						'',
-						'Example:',
-						'name: My Awesome Post',
-					].join('\n'),
-					10000
-				);
-
-				return null;
-			}
-
-			if (!frontmatter.slug) {
-				new Notice(
-					[
-						'Missing required field: "slug"',
-						'',
-						'Example:',
-						'slug: my-awesome-post',
-					].join('\n'),
-					10000
-				);
-
-				return null;
-			}
+			const slug =
+				frontmatter.slug ||
+				this.slugify(name);
 
 			const payload: PressPublishPayload =
 				{
-					name: frontmatter.name,
+					name,
 
-					slug: frontmatter.slug,
+					slug,
 
 					content:
 						this.stripFrontmatter(
@@ -116,18 +99,12 @@ export class PublishService {
 
 					status:
 						frontmatter.status ||
-						'draft',
+						'published',
 
 					visibility:
 						frontmatter.visibility ||
-						'private',
+						'public',
 				};
-
-			new Notice(
-				this.plugin.t(
-					'publish.validationSuccess'
-				)
-			);
 
 			return payload;
 		} catch (error: any) {
@@ -157,27 +134,18 @@ export class PublishService {
 				content.match(
 					/^---\n([\s\S]*?)\n---/
 				)?.[1] || ''
-			);
+			) || {};
 
-		if (!frontmatter.name) {
-			new Notice(
-				this.plugin.t(
-					'publish.marketMissingName'
-				)
-			);
+		const inferredName =
+			file.basename;
 
-			return null;
-		}
+		const name =
+			frontmatter.name ||
+			inferredName;
 
-		if (!frontmatter.slug) {
-			new Notice(
-				this.plugin.t(
-					'publish.marketMissingSlug'
-				)
-			);
-
-			return null;
-		}
+		const slug =
+			frontmatter.slug ||
+			this.slugify(name);
 
 		if (!frontmatter.kind) {
 			new Notice(
@@ -191,9 +159,11 @@ export class PublishService {
 			frontmatter.price ===
 			undefined
 		) {
-			this.plugin.t(
-				'publish.marketMissingPrice'
-			)
+			new Notice(
+				this.plugin.t(
+					'publish.marketMissingPrice'
+				)
+			);
 
 			return null;
 		}
@@ -205,9 +175,9 @@ export class PublishService {
 			);
 
 		return {
-			name: frontmatter.name,
+			name,
 
-			slug: frontmatter.slug,
+			slug,
 
 			kind: frontmatter.kind,
 
@@ -215,7 +185,7 @@ export class PublishService {
 
 			currency:
 				frontmatter.currency ||
-				null,
+				'USD',
 
 			category:
 				frontmatter.category ||
@@ -223,7 +193,7 @@ export class PublishService {
 
 			status:
 				frontmatter.status ||
-				'draft',
+				'published',
 
 			visibility:
 				frontmatter.visibility ||

@@ -16,12 +16,6 @@ export const translations = {
 
 			profiles: 'Profiles',
 
-			addProfile:
-				'Add New Token',
-
-			addProfileDesc:
-				'Add a new Sentilis profile',
-
 			defaultProfile:
 				'Default Profile',
 
@@ -31,6 +25,21 @@ export const translations = {
 			active: 'Active',
 			
 			deleteProfile: 'Delete Profile',
+		},
+
+		addProfile: {
+			title: 'Add Sentilis Profile',
+			accessToken: 'Access Token',
+			save: 'Save',
+			completeFields: 'Please complete all fields',
+			tokenAlreadyExists:
+				'This token has already been added',
+			invalidToken:
+				'Invalid Sentilis token',
+			profileAdded:
+				'Profile added successfully',
+			addNewToken: 'Add New Token',
+			addNewTokenDesc: 'Add a new Sentilis profile',
 		},
 
 		publish: {
@@ -179,12 +188,6 @@ export const translations = {
 
 			profiles: 'Perfiles',
 
-			addProfile:
-				'Agregar Token',
-
-			addProfileDesc:
-				'Agregar un nuevo token de Sentilis',
-
 			defaultProfile:
 				'Perfil Predeterminado',
 
@@ -194,6 +197,22 @@ export const translations = {
 			active: 'Activo',
 			
 			deleteProfile: 'Eliminar Perfil',
+		},
+
+		addProfile: {
+			title: 'Agregar perfil de Sentilis',
+			accessToken: 'Token de acceso',
+			save: 'Guardar',
+			completeFields:
+				'Por favor completa todos los campos',
+			tokenAlreadyExists:
+				'Este token ya fue agregado',
+			invalidToken:
+				'Token de Sentilis inválido',
+			profileAdded:
+				'Perfil agregado correctamente',
+			addNewToken: 'Agregar Nuevo Token',
+			addNewTokenDesc: 'Agregar un nuevo perfil de Sentilis',
 		},
 
 		publish: {
@@ -212,9 +231,9 @@ export const translations = {
 			validationSuccess:
 				'Validación exitosa',
 				
-			press: 'Publicar en Prensa',
+			press: 'Publicar en Press',
 
-			market: 'Publicar en Mercado',
+			market: 'Publicar en Market',
 			
 			offline: 'No puedes publicar sin conexión',
 			marketMissingName:

@@ -9,6 +9,7 @@ import { SentilisPluginInterface } from '../types/plugin';
 
 export class AddProfileModal extends Modal {
 	plugin: SentilisPluginInterface;
+
 	onSave: () => void;
 
 	token: string = '';
@@ -16,11 +17,12 @@ export class AddProfileModal extends Modal {
 	constructor(
 		app: App,
 		plugin: SentilisPluginInterface,
-		onSave: () => void,
+		onSave: () => void
 	) {
 		super(app);
 
 		this.plugin = plugin;
+
 		this.onSave = onSave;
 	}
 
@@ -30,53 +32,95 @@ export class AddProfileModal extends Modal {
 		contentEl.empty();
 
 		contentEl.createEl('h2', {
-			text: 'Add Sentilis Profile',
+			text: this.plugin.t(
+				'addProfile.title'
+			),
 		});
 
 		new Setting(contentEl)
-			.setName('Access Token')
+			.setName(
+				this.plugin.t(
+					'addProfile.accessToken'
+				)
+			)
 			.addText((text) => {
 				text.onChange((value) => {
-					this.token = value;
+					this.token = value.trim();
 				});
 			});
 
-		new Setting(contentEl).addButton((button) => {
-			button
-				.setButtonText('Save')
-				.setCta()
-				.onClick(async () => {
-					if (!this.token) {
-						new Notice(
-							'Please complete all fields'
+		new Setting(contentEl).addButton(
+			(button) => {
+				button
+					.setButtonText(
+						this.plugin.t(
+							'addProfile.save'
+						)
+					)
+					.setCta()
+					.onClick(async () => {
+						if (!this.token) {
+							new Notice(
+								this.plugin.t(
+									'addProfile.completeFields'
+								)
+							);
+
+							return;
+						}
+
+						const tokenExists =
+							this.plugin.settings.profiles.some(
+								(profile) =>
+									profile.token ===
+									this.token
+							);
+
+						if (tokenExists) {
+							new Notice(
+								this.plugin.t(
+									'addProfile.tokenAlreadyExists'
+								)
+							);
+
+							return;
+						}
+
+						const username =
+							await this.plugin.authService.authenticateToken(
+								this.token
+							);
+
+						if (!username) {
+							new Notice(
+								this.plugin.t(
+									'addProfile.invalidToken'
+								)
+							);
+
+							return;
+						}
+
+						await this.plugin.profileService.addProfile(
+							username,
+							this.token
 						);
 
-						return;
-					}
+						new Notice(
+							this.plugin.t(
+								'addProfile.profileAdded'
+							)
+						);
 
-					const username = await this.plugin.authService.authenticateToken(
-						this.token
-					);
+						this.onSave();
 
-					if (!username) {
-						return;
-					}
-
-					await this.plugin.profileService.addProfile(
-						username,
-						this.token
-					);
-
-					this.onSave();
-
-					this.close();
-				});
-		});
+						this.close();
+					});
+			}
+		);
 	}
 
 	onClose() {
-		const { contentEl } = this;
-
-		contentEl.empty();
+		this.contentEl.empty();
 	}
 }
