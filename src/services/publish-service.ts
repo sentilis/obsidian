@@ -1,6 +1,7 @@
 import {
 	Notice,
 	TFile,
+	TFolder,
 	parseYaml,
 } from 'obsidian';
 
@@ -351,6 +352,280 @@ export class PublishService {
 			new Notice(
 				error?.message ||
 					'Publish failed'
+			);
+
+			return false;
+		}
+	}
+	
+	async publishPressFolder(
+		folder: TFolder
+	): Promise<boolean> {
+		try {
+			const markdownFiles =
+				folder.children.filter(
+					(item): item is TFile =>
+						item instanceof
+							TFile &&
+						item.extension ===
+							'md'
+				);
+
+			if (
+				markdownFiles.length === 0
+			) {
+				new Notice(
+					'No markdown files found in folder'
+				);
+
+				return false;
+			}
+
+			let mainFile =
+				markdownFiles.find(
+					(file) =>
+						file.name ===
+						'index.md'
+				);
+
+			if (!mainFile) {
+				if (
+					markdownFiles.length >
+					1
+				) {
+					new Notice(
+						'Multiple markdown files found without index.md'
+					);
+
+					return false;
+				}
+
+				mainFile =
+					markdownFiles[0];
+			}
+
+			const mainPayload =
+				await this.validatePressFile(
+					mainFile
+				);
+
+			if (!mainPayload) {
+				return false;
+			}
+
+			const buildPressFile =
+				async (
+					file: TFile,
+					payload: any
+				): Promise<PressFile> => {
+					const rawContent =
+						await this.plugin.app.vault.read(
+							file
+						);
+
+					const normalizedContent =
+						this.plugin.assetService.normalizeMarkdown(
+							this.stripFrontmatter(
+								rawContent
+							)
+						);
+
+					return {
+						filePath:
+							file.path,
+
+						content:
+							normalizedContent,
+
+						metadata: {
+							name: payload.name,
+
+							slug: payload.slug,
+
+							category:
+								null,
+
+							status:
+								payload.status as any,
+
+							visibility:
+								payload.visibility as any,
+
+							image:
+								null,
+
+							tags: [],
+
+							authors: [],
+						},
+
+						images:
+							this.plugin.assetService.buildImageObjects(
+								normalizedContent
+							),
+
+						videos: [],
+
+						links: [],
+					};
+				};
+
+			const mainPressFile =
+				await buildPressFile(
+					mainFile,
+					mainPayload
+				);
+
+			const hidden: PressFile[] =
+				[];
+
+			for (const file of markdownFiles) {
+				if (
+					file.path ===
+					mainFile.path
+				) {
+					continue;
+				}
+
+				const payload =
+					await this.validatePressFile(
+						file
+					);
+
+				if (!payload) {
+					continue;
+				}
+
+				payload.status =
+					mainPayload.status;
+
+				payload.visibility =
+					mainPayload.visibility;
+
+				const hiddenFile =
+					await buildPressFile(
+						file,
+						payload
+					);
+
+				hidden.push(
+					hiddenFile
+				);
+			}
+
+			const result: PressCreateResult =
+				{
+					main: mainPressFile,
+
+					hidden,
+
+					errors: [],
+				};
+
+			const upload =
+				toPressUpload(
+					result
+				);
+
+			const allContent =
+				await Promise.all(
+					markdownFiles.map(
+						async (
+							file
+						) =>
+							await this.plugin.app.vault.read(
+								file
+							)
+					)
+				);
+
+			const assets =
+				new Map<
+					string,
+					Uint8Array
+				>();
+
+			for (
+				let i = 0;
+				i <
+				markdownFiles.length;
+				i++
+			) {
+				const normalized =
+					this.plugin.assetService.normalizeMarkdown(
+						allContent[i]
+					);
+
+				const assetMap =
+					await this.plugin.assetService.buildAssetMap(
+						normalized,
+						markdownFiles[i]
+					);
+
+				assetMap.forEach(
+					(
+						value,
+						key
+					) => {
+						assets.set(
+							key,
+							value
+						);
+					}
+				);
+			}
+
+			const formData =
+				buildPressFormData(
+					upload,
+					assets
+				);
+
+			const profile =
+				this.plugin.getCurrentProfile();
+
+			if (!profile) {
+				new Notice(
+					this.plugin.t(
+						'publish.noProfile'
+					)
+				);
+
+				return false;
+			}
+
+			const response =
+				await this.plugin.apiClient.uploadPress(
+					profile.token,
+					formData
+				);
+
+			if (!response.success) {
+				new Notice(
+					response.error ||
+						this.plugin.t(
+							'publish.failed'
+						)
+				);
+
+				return false;
+			}
+
+			new Notice(
+				'Folder published successfully'
+			);
+
+			this.plugin.app.workspace.trigger(
+				SENTILIS_EVENTS.PRESS_PUBLISHED
+			);
+
+			return true;
+		} catch (error: any) {
+			console.error(error);
+
+			new Notice(
+				error?.message ||
+					'Folder publish failed'
 			);
 
 			return false;

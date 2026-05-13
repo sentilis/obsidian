@@ -1,4 +1,4 @@
-import { Notice, Plugin, TFile } from 'obsidian';
+import { Notice, Plugin, TFile, TFolder } from 'obsidian';
 
 import { DEFAULT_SETTINGS } from './settings/settings';
 import { SentilisPluginSettings } from './settings/types';
@@ -138,11 +138,23 @@ export default class SentilisPlugin extends Plugin {
 										await this.publishService.publishPressFile(
 											file
 										);
-									} else {
-										new Notice(
-											'Only markdown files can be published'
-										);
+
+										return;
 									}
+
+									if (
+										file instanceof TFolder
+									) {
+										await this.publishService.publishPressFolder(
+											file
+										);
+
+										return;
+									}
+
+									new Notice(
+										'Only markdown files or folders can be published'
+									);
 								});
 						});
 

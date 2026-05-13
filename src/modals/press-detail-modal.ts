@@ -249,8 +249,19 @@ export class PressDetailModal extends Modal {
 				(child) => {
 					const row =
 						list.createDiv({
-							cls: 'sentilis-premium-row',
+							cls: 'sentilis-premium-row sentilis-clickable-row',
 						});
+
+					row.addEventListener(
+						'click',
+						() => {
+							new PressDetailModal(
+								this.app,
+								this.plugin,
+								child.id
+							).open();
+						}
+					);
 
 					const left =
 						row.createDiv({
@@ -288,9 +299,7 @@ export class PressDetailModal extends Modal {
 						);
 					}
 
-					if (
-						child.visibility
-					) {
+					if (child.visibility) {
 						right.createEl(
 							'span',
 							{
