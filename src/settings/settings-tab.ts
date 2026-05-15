@@ -76,11 +76,13 @@ export class SentilisSettingTab extends PluginSettingTab {
 								.forEach((leaf) => {
 									const view: any = leaf.view;
 
-									view.render();
+									if (view && typeof view.render === 'function') {
+										view.render();
+									}
 								});
 						});
 				});
-		}
+	    }
 
 
 
@@ -121,14 +123,14 @@ export class SentilisSettingTab extends PluginSettingTab {
 				}
 
 				if (
-					profile.id ===
-					this.plugin.settings
-						.defaultProfileId
-				) {
-					profileSetting.setClass(
-						'sentilis-default-profile'
-					);
-				}
+	profile.id ===
+	this.plugin.settings
+		.defaultProfileId
+) {
+	profileSetting.settingEl.addClass(
+		'sentilis-default-profile'
+	);
+}
 
 				profileSetting.addButton((button) => {
 					button

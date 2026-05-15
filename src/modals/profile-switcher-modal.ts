@@ -6,6 +6,7 @@ import {
 
 import { SentilisProfile } from '../settings/types';
 import { SentilisPluginInterface } from '../types/plugin';
+import { SENTILIS_EVENTS } from '../constants/events';
 
 export class ProfileSwitcherModal extends SuggestModal<SentilisProfile> {
 	plugin: SentilisPluginInterface;
@@ -63,6 +64,10 @@ export class ProfileSwitcherModal extends SuggestModal<SentilisProfile> {
 	) {
 		await this.plugin.profileService.setDefaultProfile(
 			profile.id
+		);
+
+		this.app.workspace.trigger(
+			SENTILIS_EVENTS.PROFILE_CHANGED
 		);
 
 		new Notice(

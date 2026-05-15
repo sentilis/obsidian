@@ -1,5 +1,6 @@
 import {
 	TFile,
+	TFolder,
 	parseYaml,
 } from 'obsidian';
 
@@ -217,6 +218,58 @@ export class AssetService {
 		}
 
 		return refs;
+	}
+
+	autoDetectMarketAssets(
+		folderPath: string
+	) {
+		const imageCandidates = [
+			'attachments/image.png',
+			'attachments/image.jpg',
+			'attachments/image.jpeg',
+			'attachments/image.webp',
+		];
+
+		const attachmentCandidates =
+			[
+				'attachments/attachment.zip',
+			];
+
+		let image: string | null =
+			null;
+
+		let attachment:
+			| string
+			| null = null;
+
+		for (const candidate of imageCandidates) {
+			const file =
+				this.plugin.app.vault.getAbstractFileByPath(
+					`${folderPath}/${candidate}`
+				);
+
+			if (file instanceof TFile) {
+				image = `./${candidate}`;
+				break;
+			}
+		}
+
+		for (const candidate of attachmentCandidates) {
+			const file =
+				this.plugin.app.vault.getAbstractFileByPath(
+					`${folderPath}/${candidate}`
+				);
+
+			if (file instanceof TFile) {
+				attachment = `./${candidate}`;
+				break;
+			}
+		}
+
+		return {
+			image,
+			attachment,
+		};
 	}
 
 	async buildAssetMap(

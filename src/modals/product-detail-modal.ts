@@ -30,6 +30,14 @@ export class ProductDetailModal extends Modal {
 
 		contentEl.empty();
 
+		contentEl.addClass(
+			'sentilis-premium-modal'
+		);
+
+		this.modalEl.addClass(
+			'sentilis-large-modal'
+		);
+
 		contentEl.createEl('h2', {
 			text: this.plugin.t(
 				'productModal.title'
@@ -53,8 +61,18 @@ export class ProductDetailModal extends Modal {
 					cls: 'sentilis-premium-header',
 				});
 
-			const iconWrapper =
+			const topRow =
 				header.createDiv({
+					cls: 'sentilis-premium-top-row',
+				});
+
+			const leftSide =
+				topRow.createDiv({
+					cls: 'sentilis-premium-title-group',
+				});
+
+			const iconWrapper =
+				leftSide.createDiv({
 					cls: 'sentilis-premium-icon',
 				});
 
@@ -63,10 +81,36 @@ export class ProductDetailModal extends Modal {
 				'package'
 			);
 
-			header.createEl('h1', {
+			leftSide.createEl('h1', {
 				text: product.name,
 				cls: 'sentilis-premium-title',
 			});
+
+			if (product.url) {
+				const button =
+					topRow.createEl('a', {
+						text: this.plugin.t(
+							'productModal.openProduct'
+						),
+
+						href: product.url,
+
+						cls: 'sentilis-premium-btn',
+					});
+
+				button.target =
+					'_blank';
+
+				const btnIcon =
+					button.createSpan({
+						cls: 'sentilis-btn-icon',
+					});
+
+				setIcon(
+					btnIcon,
+					'external-link'
+				);
+			}
 
 			const meta =
 				contentEl.createDiv({
@@ -168,7 +212,7 @@ export class ProductDetailModal extends Modal {
 				createMetaItem(
 					'calendar',
 					this.plugin.t(
-						'marketDetail.createdAt'
+						'productModal.createdAt'
 					),
 					new Date(
 						product.createdAt
@@ -180,23 +224,6 @@ export class ProductDetailModal extends Modal {
 				cls: 'sentilis-premium-divider',
 			});
 
-
-			if (product.url) {
-				const link =
-					contentEl.createEl(
-						'a',
-						{
-							text: this.plugin.t(
-								'productModal.openProduct'
-							),
-
-							href: product.url,
-						}
-					);
-
-				link.target =
-					'_blank';
-			}
 		} catch (error: any) {
 			contentEl.empty();
 

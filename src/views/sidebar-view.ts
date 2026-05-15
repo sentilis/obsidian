@@ -21,6 +21,8 @@ export class SentilisSidebarView extends ItemView {
 	activeTab: 'press' | 'market' =
 		'press';
 
+	private renderVersion = 0;
+
 	constructor(
 		leaf: WorkspaceLeaf,
 		plugin: SentilisPluginInterface
@@ -66,6 +68,15 @@ export class SentilisSidebarView extends ItemView {
 			)
 		);
 
+		this.registerEvent(
+			this.app.workspace.on(
+				SENTILIS_EVENTS.PROFILE_CHANGED,
+				() => {
+					this.render();
+				}
+			)
+		);
+
 		this.render();
 	}
 
@@ -74,6 +85,10 @@ export class SentilisSidebarView extends ItemView {
 	}
 
 	async render() {
+
+		const currentRender =
+			++this.renderVersion;
+
 		const { contentEl } = this;
 
 		contentEl.empty();
@@ -181,6 +196,10 @@ export class SentilisSidebarView extends ItemView {
 		const products =
 			await this.plugin.contentService.getRecentProducts();
 
+		if (currentRender !== this.renderVersion) {
+			return;
+		}
+
 		loadingEl.remove();
 
 		if (
@@ -230,7 +249,7 @@ export class SentilisSidebarView extends ItemView {
 								itemMenu
 									.setTitle(
 										this.plugin.t(
-											'sidebar.rowElement.showDetails'
+											'rowElement.showDetails'
 										)
 									)
 									.setIcon(
@@ -253,7 +272,7 @@ export class SentilisSidebarView extends ItemView {
 								itemMenu
 									.setTitle(
 										this.plugin.t(
-											'sidebar.rowElement.openLink'
+											'rowElement.openLink'
 										)
 									)
 									.setIcon(
@@ -436,7 +455,7 @@ export class SentilisSidebarView extends ItemView {
 								itemMenu
 									.setTitle(
 										this.plugin.t(
-											'sidebar.rowElement.showDetails'
+											'rowElement.showDetails'
 										)
 									)
 									.setIcon(
@@ -459,7 +478,7 @@ export class SentilisSidebarView extends ItemView {
 								itemMenu
 									.setTitle(
 										this.plugin.t(
-											'sidebar.rowElement.openLink'
+											'rowElement.openLink'
 										)
 									)
 									.setIcon(
@@ -491,7 +510,7 @@ export class SentilisSidebarView extends ItemView {
 								itemMenu
 									.setTitle(
 										this.plugin.t(
-											'sidebar.rowElement.delete'
+											'rowElement.delete'
 										)
 									)
 									.setIcon(
@@ -502,7 +521,7 @@ export class SentilisSidebarView extends ItemView {
 											const confirmed =
 												window.confirm(
 													`${this.plugin.t(
-														'sidebar.rowElement.confirmDelete'
+														'rowElement.confirmDelete'
 													)} "${item.name}"?`
 												);
 

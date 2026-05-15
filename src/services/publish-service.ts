@@ -3,6 +3,7 @@ import {
 	TFile,
 	TFolder,
 	parseYaml,
+	normalizePath,
 } from 'obsidian';
 
 import { SentilisPluginInterface } from '../types/plugin';
@@ -159,7 +160,8 @@ export class PublishService {
 	}
 
 	async validateMarketFile(
-		file: TFile
+		file: TFile,
+		folder: TFolder
 	) {
 		const content =
 			await this.plugin.app.vault.read(
@@ -211,9 +213,25 @@ export class PublishService {
 				''
 			);
 
+		const autoDetected =
+			folder
+				? this.plugin.assetService.autoDetectMarketAssets(
+						folder.path
+				)
+				: {
+						image: null,
+						attachment: null,
+				};
+
 		const image =
 			frontmatter.cover ||
 			frontmatter.image ||
+			autoDetected.image ||
+			null;
+
+		const attachment =
+			frontmatter.attachment ||
+			autoDetected.attachment ||
 			null;
 		
 
@@ -245,6 +263,7 @@ export class PublishService {
 			content: markdownContent,
 			
 			image,
+			attachment,
 		};
 	}
 
@@ -766,7 +785,9 @@ export class PublishService {
 						image:
 							validated.image || null,
 
-						attachment: null,
+						attachment:
+							validated.attachment ||
+							null,
 					},
 
 					content:
@@ -842,6 +863,209 @@ export class PublishService {
 		);
 
 		return true;
+	}
+
+	async publishMarketFolder(
+		folder: TFolder
+	): Promise<boolean> {
+		try {
+			const markdownFiles =
+				folder.children.filter(
+					(item): item is TFile =>
+						item instanceof
+							TFile &&
+						item.extension ===
+							'md'
+				);
+
+			if (
+				markdownFiles.length === 0
+			) {
+				new Notice(
+					'No markdown files found in folder'
+				);
+
+				return false;
+			}
+
+			if (
+				markdownFiles.length > 1
+			) {
+				new Notice(
+					'Market supports only one markdown file'
+				);
+
+				return false;
+			}
+
+			const file =
+				markdownFiles[0];
+
+			const validated =
+				await this.validateMarketFile(
+					file,
+					folder
+				);
+
+			if (!validated) {
+				return false;
+			}
+
+			const profile =
+				this.plugin.getCurrentProfile();
+
+			if (!profile) {
+				new Notice(
+					this.plugin.t(
+						'publish.noProfile'
+					)
+				);
+
+				return false;
+			}
+
+			const normalizedContent =
+				this.plugin.assetService.normalizeMarkdown(
+					validated.content
+				);
+
+			const upload =
+				toProductUpload({
+					main: {
+						metadata: {
+							name: validated.name,
+
+							slug: validated.slug,
+
+							kind: validated.kind,
+
+							price:
+								validated.price,
+
+							currency:
+								validated.currency,
+
+							category:
+								validated.category,
+
+							status:
+								validated.status,
+
+							visibility:
+								validated.visibility,
+
+							image:
+								validated.image ||
+								null,
+
+							attachment:
+								validated.attachment ||
+								null,
+						},
+
+						content:
+							normalizedContent,
+
+						images:
+							this.plugin.assetService.buildImageObjects(
+								normalizedContent
+							),
+
+						videos:
+							this.plugin.assetService.extractVideoLinks(
+								normalizedContent
+							),
+
+						links:
+							this.plugin.assetService.extractMarkdownLinks(
+								validated.content,
+								file
+							),
+					},
+				} as any);
+
+			const rawContent =
+				await this.plugin.app.vault.read(
+					file
+				);
+
+			const assets =
+				await this.plugin.assetService.buildAssetMap(
+					rawContent,
+					file
+				);
+
+			if (validated.attachment) {
+				const fullAttachmentPath =
+					normalizePath(
+						`${folder.path}/${validated.attachment.replace(
+							'./',
+							''
+						)}`
+					);
+
+				const attachmentFile =
+					this.plugin.app.vault.getAbstractFileByPath(
+						fullAttachmentPath
+					);
+
+				if (attachmentFile instanceof TFile) {
+					const attachmentData =
+						await this.plugin.app.vault.readBinary(
+							attachmentFile
+						);
+
+					assets.set(
+						validated.attachment,
+						new Uint8Array(
+							attachmentData
+						)
+					);
+				}
+			}
+
+			const formData =
+				buildProductFormData(
+					upload,
+					assets
+				);
+
+			const response =
+				await this.plugin.apiClient.uploadProduct(
+					profile.token,
+					formData
+				);
+
+			if (!response.success) {
+				new Notice(
+					response.error ||
+						this.plugin.t(
+							'publish.failed'
+						)
+				);
+
+				return false;
+			}
+
+			new Notice(
+				'Market folder published successfully'
+			);
+
+			this.plugin.app.workspace.trigger(
+				SENTILIS_EVENTS.PRESS_PUBLISHED
+			);
+
+			return true;
+		} catch (error: any) {
+			console.error(error);
+
+			new Notice(
+				error?.message ||
+					'Market folder publish failed'
+			);
+
+			return false;
+		}
 	}
 
 	async deletePress(

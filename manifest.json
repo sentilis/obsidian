@@ -1,10 +1,10 @@
 {
-	"id": "sentilis-plugin",
+	"id": "sentilis-obsidian",
 	"name": "Sentilis",
 	"version": "0.0.1",
 	"minAppVersion": "1.5.0",
-	"description": "Publish content from Obsidian to Sentilis.",
-	"author": "Waskalle",
-	"authorUrl": "https://github.com/Waskalle-Bahena",
+	"description": "A folder. That’s the platform.",
+	"author": "Sentilis",
+	"authorUrl": "https://about.sentilis.me/?utm_source=obsidian&utm_medium=app&utm_campaign=plugin_manifest",
 	"isDesktopOnly": false
 }

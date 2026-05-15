@@ -172,12 +172,26 @@ export default class SentilisPlugin extends Plugin {
 										await this.publishService.publishMarketFile(
 											file
 										);
-									} else {
-										new Notice(
-											'Only markdown files can be published'
-										);
+
+										return;
 									}
+
+									if (
+										file instanceof TFolder
+									) {
+										await this.publishService.publishMarketFolder(
+											file
+										);
+
+										return;
+									}
+
+									new Notice(
+										'Only markdown files or folders can be published'
+									);
 								});
+
+
 						});
 					});
 				}

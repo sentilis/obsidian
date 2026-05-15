@@ -133,6 +133,8 @@ export const translations = {
 			category: 'Category',
 
 			error: 'Unknown error',
+
+			createdAt: 'Created At',
 		},
 
 		rowElement: {
@@ -165,7 +167,7 @@ export const translations = {
 
 			openUrl: 'Open URL',
 
-			children: 'Children',
+			children: 'Sub-pages',
 			
 			createdAt: 'Created At',
 		},
@@ -308,6 +310,8 @@ export const translations = {
 			category: 'Categoría',
 
 			error: 'Error desconocido',
+			
+			createdAt: 'Creado el',
 		},
 
 		rowElement: {
@@ -340,7 +344,7 @@ export const translations = {
 
 			openUrl: 'Abrir URL',
 
-			children: 'Hijos',
+			children: 'Sub-páginas',
 			
 			createdAt: 'Creado el',
 		},

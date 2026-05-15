@@ -85,8 +85,13 @@ export class PressDetailModal extends Modal {
 				cls: 'sentilis-premium-header',
 			});
 
-		const iconWrapper =
+		const topRow =
 			header.createDiv({
+				cls: 'sentilis-premium-top-row',
+			});
+
+		const iconWrapper =
+			topRow.createDiv({
 				cls: 'sentilis-premium-icon',
 			});
 
@@ -95,10 +100,36 @@ export class PressDetailModal extends Modal {
 			'file-text'
 		);
 
-		header.createEl('h1', {
+		topRow.createEl('h1', {
 			text: item.name,
 			cls: 'sentilis-premium-title',
 		});
+
+		if (item.url) {
+			const button =
+				topRow.createEl('a', {
+					text: this.plugin.t(
+						'pressDetail.openUrl'
+					),
+
+					href: item.url,
+
+					cls: 'sentilis-premium-btn',
+				});
+
+			button.target =
+				'_blank';
+
+			const btnIcon =
+				button.createSpan({
+					cls: 'sentilis-btn-icon',
+				});
+
+			setIcon(
+				btnIcon,
+				'external-link'
+			);
+	}
 
 		const meta =
 			contentEl.createDiv({
@@ -179,37 +210,6 @@ export class PressDetailModal extends Modal {
 			contentEl.createDiv({
 				cls: 'sentilis-premium-divider',
 			});
-
-		if (item.url) {
-			const actions =
-				contentEl.createDiv({
-					cls: 'sentilis-premium-actions',
-				});
-
-			const button =
-				actions.createEl('a', {
-					text: this.plugin.t(
-						'pressDetail.openUrl'
-					),
-
-					href: item.url,
-
-					cls: 'sentilis-premium-btn',
-				});
-
-			button.target =
-				'_blank';
-
-			const btnIcon =
-				button.createSpan({
-					cls: 'sentilis-btn-icon',
-				});
-
-			setIcon(
-				btnIcon,
-				'external-link'
-			);
-		}
 
 		if (
 			item.children &&

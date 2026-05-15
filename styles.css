@@ -1,17 +1,71 @@
 .sentilis-active-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+
 	margin-left: 8px;
-	padding: 2px 8px;
+	padding: 4px 10px;
 
 	border-radius: 999px;
 
-	background: #39ff14;
-	color: #000;
+	background: rgba(
+		80,
+		255,
+		120,
+		0.08
+	);
+
+	border: 1px solid rgba(
+		80,
+		255,
+		120,
+		0.18
+	);
+
+	backdrop-filter: blur(10px);
+
+	color: #7dff9b;
 
 	font-size: 10px;
 	font-weight: 700;
-	letter-spacing: 0.08em;
+
+	letter-spacing: 0.12em;
 
 	text-transform: uppercase;
+
+	box-shadow:
+		0 0 12px rgba(
+			80,
+			255,
+			120,
+			0.12
+		),
+		inset 0 0 8px rgba(
+			80,
+			255,
+			120,
+			0.04
+		);
+}
+
+.sentilis-active-badge::before {
+	content: '';
+
+	width: 7px;
+	height: 7px;
+
+	border-radius: 50%;
+
+	background: #57ff84;
+
+	box-shadow:
+		0 0 10px #57ff84,
+		0 0 20px rgba(
+			87,
+			255,
+			132,
+			0.7
+		);
 }
 
 .sentilis-active-profile-badge {
@@ -598,4 +652,19 @@
 		255,
 		0.04
 	);
+}
+
+.sentilis-premium-top-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.sentilis-premium-title-group {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	min-width: 0;
 }
