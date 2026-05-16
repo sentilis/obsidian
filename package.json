@@ -1,6 +1,6 @@
 {
 	"name": "sentilis-obsidian",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "Publish content from your vault to the Sentilis platform.",
 	"main": "main.js",
 	"type": "module",
