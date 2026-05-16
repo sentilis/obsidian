@@ -1,0 +1,670 @@
+.sentilis-active-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+
+	margin-left: 8px;
+	padding: 4px 10px;
+
+	border-radius: 999px;
+
+	background: rgba(
+		80,
+		255,
+		120,
+		0.08
+	);
+
+	border: 1px solid rgba(
+		80,
+		255,
+		120,
+		0.18
+	);
+
+	backdrop-filter: blur(10px);
+
+	color: #7dff9b;
+
+	font-size: 10px;
+	font-weight: 700;
+
+	letter-spacing: 0.12em;
+
+	text-transform: uppercase;
+
+	box-shadow:
+		0 0 12px rgba(
+			80,
+			255,
+			120,
+			0.12
+		),
+		inset 0 0 8px rgba(
+			80,
+			255,
+			120,
+			0.04
+		);
+}
+
+.sentilis-active-badge::before {
+	content: '';
+
+	width: 7px;
+	height: 7px;
+
+	border-radius: 50%;
+
+	background: #57ff84;
+
+	box-shadow:
+		0 0 10px #57ff84,
+		0 0 20px rgba(
+			87,
+			255,
+			132,
+			0.7
+		);
+}
+
+.sentilis-active-profile-badge {
+	color: rgb(255 126 103);
+
+	font-size: 11px;
+	font-weight: 700;
+
+	text-transform: uppercase;
+
+	letter-spacing: 0.5px;
+
+	margin-top: 4px;
+
+	display: inline-block;
+}
+
+.sentilis-offline-indicator {
+	color: #ff4d4f;
+
+	font-size: 12px;
+	font-weight: 700;
+
+	margin-bottom: 12px;
+}
+
+.sentilis-action-btn:hover {
+	background: var(--interactive-accent);
+
+	color: white;
+}
+
+.sentilis-action-btn.danger:hover {
+	background: #ff4d4f;
+}
+
+.sentilis-danger-menu-item .svg-icon {
+	color: #ff4d4f;
+}
+
+.sentilis-danger-menu-item:hover .svg-icon {
+	color: #ff7875;
+}
+
+/* -------------------------------- */
+/* Tabs */
+/* -------------------------------- */
+
+.sentilis-tabs {
+	display: flex;
+	gap: 12px;
+
+	margin-bottom: 24px;
+}
+
+.sentilis-tab {
+	padding: 10px 18px;
+
+	border-radius: 14px;
+
+	cursor: pointer;
+
+	background: rgba(
+		255,
+		255,
+		255,
+		0.03
+	);
+
+	border: 1px solid
+		rgba(255, 255, 255, 0.05);
+
+	font-size: 14px;
+	font-weight: 600;
+
+	transition: all 0.2s ease;
+}
+
+.sentilis-tab:hover {
+	background: rgba(
+		255,
+		255,
+		255,
+		0.05
+	);
+}
+
+.sentilis-tab.is-active {
+	background: rgba(
+		139,
+		92,
+		246,
+		0.15
+	);
+
+	border-color: rgba(
+		139,
+		92,
+		246,
+		0.3
+	);
+
+	color: #a78bfa;
+}
+
+/* -------------------------------- */
+/* Sidebar */
+/* -------------------------------- */
+
+.sentilis-list-item {
+	position: relative;
+
+	padding: 16px;
+
+	margin-bottom: 12px;
+
+	border-radius: 20px;
+
+	background: rgba(
+		255,
+		255,
+		255,
+		0.03
+	);
+
+	border: 1px solid
+		rgba(255, 255, 255, 0.05);
+
+	backdrop-filter: blur(12px);
+
+	transition: all 0.2s ease;
+
+	cursor: pointer;
+}
+
+.sentilis-list-item:hover {
+	transform: translateY(-2px);
+
+	background: rgba(
+		255,
+		255,
+		255,
+		0.05
+	);
+
+	border-color: rgba(
+		255,
+		126,
+		103,
+		0.2
+	);
+}
+
+.sentilis-list-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+}
+
+.sentilis-list-icon {
+	width: 44px;
+	height: 44px;
+
+	border-radius: 16px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	background: rgba(
+		255,
+		255,
+		255,
+		0.04
+	);
+
+	color: var(--text-muted);
+
+	flex-shrink: 0;
+}
+
+.sentilis-list-icon svg {
+	width: 20px;
+	height: 20px;
+}
+
+.sentilis-row-title-wrapper {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+
+	width: 100%;
+
+	gap: 12px;
+}
+
+.sentilis-row-title-wrapper strong {
+	display: block;
+
+	font-size: 15px;
+
+	line-height: 1.35;
+
+	font-weight: 600;
+
+	margin-bottom: 0;
+}
+
+.sentilis-row-chevron {
+	color: var(--text-muted);
+
+	margin-top: 2px;
+
+	flex-shrink: 0;
+}
+
+.sentilis-row-chevron svg {
+	width: 16px;
+	height: 16px;
+}
+
+.sentilis-list-meta {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+
+	gap: 8px;
+
+	margin-top: 10px;
+}
+
+.sentilis-badge {
+	display: inline-flex;
+	align-items: center;
+
+	padding: 3px 10px;
+
+	border-radius: 999px;
+
+	font-size: 10px;
+	font-weight: 700;
+
+	letter-spacing: 0.04em;
+
+	text-transform: uppercase;
+
+	background-color: rgba(
+		255,
+		126,
+		103,
+		0.12
+	);
+
+	color: rgb(255 126 103);
+}
+
+.sentilis-visibility-badge {
+	background: rgba(
+		255,
+		255,
+		255,
+		0.06
+	);
+
+	color: var(--text-muted);
+}
+
+.sentilis-list-date {
+	margin-left: auto;
+
+	font-size: 11px;
+
+	color: var(--text-muted);
+
+	opacity: 0.8;
+}
+
+/* -------------------------------- */
+/* Premium Modal */
+/* -------------------------------- */
+
+.sentilis-large-modal {
+	width: 1050px !important;
+
+	max-width: 90vw;
+}
+
+.sentilis-premium-modal {
+	padding: 12px;
+}
+
+.sentilis-premium-header {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+
+	margin-bottom: 28px;
+}
+
+.sentilis-premium-icon {
+	width: 56px;
+	height: 56px;
+
+	border-radius: 16px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	background: rgba(
+		255,
+		126,
+		103,
+		0.12
+	);
+
+	color: rgb(255 126 103);
+}
+
+.sentilis-premium-icon svg {
+	width: 28px;
+	height: 28px;
+}
+
+.sentilis-premium-title {
+	margin: 0;
+
+	font-size: 34px;
+	font-weight: 700;
+
+	line-height: 1.1;
+}
+
+.sentilis-premium-meta {
+	display: flex;
+	flex-wrap: wrap;
+
+	gap: 28px;
+
+	margin-bottom: 26px;
+}
+
+.sentilis-meta-item {
+	position: relative;
+
+	padding-right: 28px;
+}
+
+.sentilis-meta-item:not(:last-child)::after {
+	content: '';
+
+	position: absolute;
+
+	right: 0;
+	top: 0;
+
+	width: 1px;
+	height: 100%;
+
+	background: var(
+		--background-modifier-border
+	);
+}
+
+.sentilis-meta-top {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	margin-bottom: 6px;
+
+	color: var(--text-muted);
+
+	font-size: 13px;
+}
+
+.sentilis-meta-top svg {
+	width: 14px;
+	height: 14px;
+}
+
+.sentilis-meta-item strong {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.sentilis-status-success {
+	color: #3ddc84;
+}
+
+.sentilis-premium-divider {
+	height: 1px;
+
+	margin: 28px 0;
+
+	background: var(
+		--background-modifier-border
+	);
+}
+
+.sentilis-premium-actions {
+	margin-bottom: 30px;
+}
+
+.sentilis-premium-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+
+	padding: 12px 18px;
+
+	border-radius: 14px;
+
+	background: rgba(
+		255,
+		126,
+		103,
+		0.12
+	);
+
+	border: 1px solid
+		rgba(255, 126, 103, 0.3);
+
+	color: rgb(255 126 103);
+
+	font-weight: 600;
+
+	text-decoration: none;
+
+	transition: all 0.2s ease;
+}
+
+.sentilis-premium-btn:hover {
+	background: rgba(
+		255,
+		126,
+		103,
+		0.18
+	);
+
+	transform: translateY(-1px);
+}
+
+.sentilis-btn-icon svg {
+	width: 16px;
+	height: 16px;
+}
+
+.sentilis-children-premium-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	margin-bottom: 18px;
+}
+
+.sentilis-children-premium-header h2 {
+	margin: 0;
+}
+
+.sentilis-children-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-width: 32px;
+	height: 32px;
+
+	padding: 0 12px;
+
+	border-radius: 999px;
+
+	background: var(
+		--background-secondary
+	);
+
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.sentilis-premium-list {
+	border-radius: 18px;
+
+	border: 1px solid
+		var(
+			--background-modifier-border
+		);
+
+	overflow: hidden;
+}
+
+.sentilis-premium-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 16px 18px;
+
+	border-bottom: 1px solid
+		var(
+			--background-modifier-border
+		);
+
+	transition: all 0.2s ease;
+}
+
+.sentilis-premium-row:last-child {
+	border-bottom: none;
+}
+
+.sentilis-premium-row:hover {
+	background: var(
+		--background-modifier-hover
+	);
+}
+
+.sentilis-premium-row-left {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.sentilis-doc-icon {
+	color: var(--text-muted);
+}
+
+.sentilis-doc-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.sentilis-row-title {
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.sentilis-premium-row-right {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.sentilis-premium-pill {
+	padding: 4px 10px;
+
+	border-radius: 999px;
+
+	background: rgba(
+		255,
+		255,
+		255,
+		0.06
+	);
+
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.sentilis-premium-visibility {
+	font-size: 12px;
+
+	color: var(--text-muted);
+
+	text-transform: capitalize;
+}
+
+.sentilis-chevron {
+	color: var(--text-muted);
+}
+
+.sentilis-chevron svg {
+	width: 16px;
+	height: 16px;
+}
+
+.sentilis-clickable-row {
+	cursor: pointer;
+}
+
+.sentilis-clickable-row:hover {
+	background: rgba(
+		255,
+		255,
+		255,
+		0.04
+	);
+}
+
+.sentilis-premium-top-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.sentilis-premium-title-group {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	min-width: 0;
+}
