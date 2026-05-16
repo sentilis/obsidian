@@ -52,12 +52,25 @@ export const translations = {
 				'Create a new Sentilis profile',
 		},
 
+		dryRun: {
+			pressLabel: 'Dry run for Press',
+			marketLabel:
+				'Dry run for Market',
+			allGood:
+				'Everything looks good. Ready to publish.',
+		},
+
 		publish: {
 			success:
 				'Published successfully',
 
 			failed:
 				'Publish failed',
+
+			uploading: 'Publishing…',
+
+			failedHint:
+				'Could not publish. Run the validation to check the content.',
 
 			noProfile:
 				'No active profile',
@@ -237,12 +250,26 @@ export const translations = {
 				'Crea un nuevo perfil de Sentilis',
 		},
 
+		dryRun: {
+			pressLabel:
+				'Dry run para Press',
+			marketLabel:
+				'Dry run para Market',
+			allGood:
+				'Todo se ve bien. Listo para publicar.',
+		},
+
 		publish: {
 			success:
 				'Publicado correctamente',
 
 			failed:
 				'Error al publicar',
+
+			uploading: 'Publicando…',
+
+			failedHint:
+				'No se pudo publicar. Ejecuta la validación para revisar el contenido.',
 
 			noProfile:
 				'No hay un perfil activo',

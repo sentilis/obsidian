@@ -7,6 +7,7 @@ import { ProfileService } from "./services/profile-service";
 import { ApiClient } from "./api/api-client";
 import { AuthService } from "./services/auth-service";
 import { ProfileSwitcherModal } from "./modals/profile-switcher-modal";
+import { DryRunModal } from "./modals/dry-run-modal";
 import { SENTILIS_VIEW_TYPE } from "./constants/views";
 import { SentilisSidebarView } from "./views/sidebar-view";
 import { ContentService } from "./services/content-service";
@@ -127,6 +128,25 @@ export default class SentilisPlugin extends Plugin {
 							});
 					});
 
+					submenu.addItem((subItem: any) => {
+						subItem
+							.setTitle(this.t("dryRun.pressLabel"))
+							.setIcon("clipboard-check")
+							.onClick(async () => {
+								if (
+									!(file instanceof TFile) &&
+									!(file instanceof TFolder)
+								) {
+									return;
+								}
+
+								const report =
+									await this.publishService.dryRunPress(file);
+
+								new DryRunModal(this.app, this, report).open();
+							});
+					});
+
 					submenu.addSeparator();
 
 					submenu.addItem((subItem: any) => {
@@ -156,6 +176,25 @@ export default class SentilisPlugin extends Plugin {
 								new Notice(
 									"Only Markdown files or folders can be published",
 								);
+							});
+					});
+
+					submenu.addItem((subItem: any) => {
+						subItem
+							.setTitle(this.t("dryRun.marketLabel"))
+							.setIcon("clipboard-check")
+							.onClick(async () => {
+								if (
+									!(file instanceof TFile) &&
+									!(file instanceof TFolder)
+								) {
+									return;
+								}
+
+								const report =
+									await this.publishService.dryRunMarket(file);
+
+								new DryRunModal(this.app, this, report).open();
 							});
 					});
 				});

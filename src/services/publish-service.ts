@@ -8,6 +8,10 @@ import {
 
 import { SentilisPluginInterface } from '../types/plugin';
 import { PressPublishPayload } from '../types/publish';
+import {
+	DryRunReport,
+	DryRunIssue,
+} from '../types/dry-run';
 import { SENTILIS_EVENTS } from '../constants/events';
 
 import {
@@ -30,6 +34,38 @@ export class PublishService {
 		plugin: SentilisPluginInterface
 	) {
 		this.plugin = plugin;
+	}
+
+	private async withUploadIndicator<T>(
+		uploadFn: () => Promise<T>
+	): Promise<T> {
+		const loading = new Notice(
+			this.plugin.t(
+				'publish.uploading'
+			),
+			0
+		);
+
+		try {
+			return await uploadFn();
+		} finally {
+			loading.hide();
+		}
+	}
+
+	private notifyPublishError(
+		rawError: string | undefined
+	) {
+		console.error(
+			'[Sentilis] publish failed:',
+			rawError
+		);
+
+		new Notice(
+			this.plugin.t(
+				'publish.failedHint'
+			)
+		);
 	}
 
 	private slugify(
@@ -393,17 +429,17 @@ export class PublishService {
 			}
 
 			const response =
-				await this.plugin.apiClient.uploadPress(
-					profile.token,
-					formData
+				await this.withUploadIndicator(
+					() =>
+						this.plugin.apiClient.uploadPress(
+							profile.token,
+							formData
+						)
 				);
 
 			if (!response.success) {
-				new Notice(
-					response.error ||
-						this.plugin.t(
-							'publish.failed'
-						)
+				this.notifyPublishError(
+					response.error
 				);
 
 				return false;
@@ -420,18 +456,15 @@ export class PublishService {
 			);
 
 			return true;
-		} catch (error: any) {
-			console.error(error);
-
-			new Notice(
-				error?.message ||
-					'Publish failed'
+		} catch (error) {
+			this.notifyPublishError(
+				(error as Error)?.message
 			);
 
 			return false;
 		}
 	}
-	
+
 	async publishPressFolder(
 		folder: TFolder
 	): Promise<boolean> {
@@ -690,24 +723,26 @@ export class PublishService {
 			}
 
 			const response =
-				await this.plugin.apiClient.uploadPress(
-					profile.token,
-					formData
+				await this.withUploadIndicator(
+					() =>
+						this.plugin.apiClient.uploadPress(
+							profile.token,
+							formData
+						)
 				);
 
 			if (!response.success) {
-				new Notice(
-					response.error ||
-						this.plugin.t(
-							'publish.failed'
-						)
+				this.notifyPublishError(
+					response.error
 				);
 
 				return false;
 			}
 
 			new Notice(
-				'Folder published successfully'
+				this.plugin.t(
+					'publish.success'
+				)
 			);
 
 			this.plugin.app.workspace.trigger(
@@ -715,12 +750,9 @@ export class PublishService {
 			);
 
 			return true;
-		} catch (error: any) {
-			console.error(error);
-
-			new Notice(
-				error?.message ||
-					'Folder publish failed'
+		} catch (error) {
+			this.notifyPublishError(
+				(error as Error)?.message
 			);
 
 			return false;
@@ -842,32 +874,26 @@ export class PublishService {
 			);
 
 		const response =
-			await this.plugin.apiClient.uploadProduct(
-				profile.token,
-				formData
+			await this.withUploadIndicator(
+				() =>
+					this.plugin.apiClient.uploadProduct(
+						profile.token,
+						formData
+					)
 			);
 
 		if (!response.success) {
-			console.error(
-				'MARKET PUBLISH ERROR',
-				response
-			);
-
-			new Notice(
-				`${this.plugin.t(
-					'publish.failed'
-				)}: ${response.error}`
+			this.notifyPublishError(
+				response.error
 			);
 
 			return false;
 		}
 
-		const slug =
-			(response.data as { slug?: string } | undefined)
-				?.slug ?? '';
-
 		new Notice(
-			`Market published: ${slug}`
+			this.plugin.t(
+				'publish.success'
+			)
 		);
 
 		this.plugin.app.workspace.trigger(
@@ -1046,24 +1072,26 @@ export class PublishService {
 				);
 
 			const response =
-				await this.plugin.apiClient.uploadProduct(
-					profile.token,
-					formData
+				await this.withUploadIndicator(
+					() =>
+						this.plugin.apiClient.uploadProduct(
+							profile.token,
+							formData
+						)
 				);
 
 			if (!response.success) {
-				new Notice(
-					response.error ||
-						this.plugin.t(
-							'publish.failed'
-						)
+				this.notifyPublishError(
+					response.error
 				);
 
 				return false;
 			}
 
 			new Notice(
-				'Market folder published successfully'
+				this.plugin.t(
+					'publish.success'
+				)
 			);
 
 			this.plugin.app.workspace.trigger(
@@ -1071,12 +1099,9 @@ export class PublishService {
 			);
 
 			return true;
-		} catch (error: any) {
-			console.error(error);
-
-			new Notice(
-				error?.message ||
-					'Market folder publish failed'
+		} catch (error) {
+			this.notifyPublishError(
+				(error as Error)?.message
 			);
 
 			return false;
@@ -1171,5 +1196,383 @@ export class PublishService {
 		);
 
 		return true;
+	}
+
+	private collectMarkdownFiles(
+		target: TFile | TFolder
+	): TFile[] {
+		if (target instanceof TFile) {
+			return target.extension === 'md'
+				? [target]
+				: [];
+		}
+
+		return target.children.filter(
+			(item): item is TFile =>
+				item instanceof TFile &&
+				item.extension === 'md'
+		);
+	}
+
+	private async collectAssetIssues(
+		file: TFile,
+		content: string
+	): Promise<{
+		refs: string[];
+		issues: DryRunIssue[];
+	}> {
+		const normalized =
+			this.plugin.assetService.normalizeMarkdown(
+				content
+			);
+
+		const imageRefs =
+			this.plugin.assetService.extractImageRefs(
+				normalized
+			);
+
+		const frontmatterRefs =
+			this.plugin.assetService.extractFrontmatterAssets(
+				content
+			);
+
+		const allRefs = Array.from(
+			new Set([
+				...imageRefs,
+				...frontmatterRefs,
+			])
+		);
+
+		const issues: DryRunIssue[] = [];
+
+		for (const ref of allRefs) {
+			if (
+				ref.startsWith('http://') ||
+				ref.startsWith('https://')
+			) {
+				continue;
+			}
+
+			const asset =
+				this.plugin.app.metadataCache.getFirstLinkpathDest(
+					ref,
+					file.path
+				);
+
+			if (!(asset instanceof TFile)) {
+				issues.push({
+					severity: 'error',
+					message: `Missing asset "${ref}" referenced in ${file.name}`,
+				});
+			}
+		}
+
+		return {
+			refs: allRefs,
+			issues,
+		};
+	}
+
+	async dryRunPress(
+		target: TFile | TFolder
+	): Promise<DryRunReport> {
+		const issues: DryRunIssue[] = [];
+		const summary: DryRunReport['summary'] =
+			[];
+
+		const files =
+			this.collectMarkdownFiles(target);
+
+		if (files.length === 0) {
+			issues.push({
+				severity: 'error',
+				message:
+					target instanceof TFile
+						? 'Only Markdown files can be published'
+						: 'No Markdown files found in folder',
+			});
+
+			return {
+				target: target.name,
+				kind: 'press',
+				summary,
+				issues,
+			};
+		}
+
+		summary.push({
+			label: 'Markdown files',
+			value: String(files.length),
+		});
+
+		if (target instanceof TFolder) {
+			const indexFile = files.find(
+				(f) => f.name === 'index.md'
+			);
+
+			if (
+				!indexFile &&
+				files.length > 1
+			) {
+				issues.push({
+					severity: 'error',
+					message:
+						'Multiple Markdown files found without index.md',
+				});
+			}
+
+			summary.push({
+				label: 'Main file',
+				value: indexFile
+					? indexFile.name
+					: files[0]?.name || '-',
+			});
+		}
+
+		let totalRefs = 0;
+
+		for (const file of files) {
+			const content =
+				await this.plugin.app.vault.read(
+					file
+				);
+
+			const cache =
+				this.plugin.app.metadataCache.getFileCache(
+					file
+				);
+
+			const frontmatter =
+				cache?.frontmatter || {};
+
+			if (!frontmatter.status) {
+				issues.push({
+					severity: 'info',
+					message: `${file.name}: status not set, defaults to "published"`,
+				});
+			}
+
+			if (!frontmatter.visibility) {
+				issues.push({
+					severity: 'info',
+					message: `${file.name}: visibility not set, defaults to "public"`,
+				});
+			}
+
+			const assetCheck =
+				await this.collectAssetIssues(
+					file,
+					content
+				);
+
+			totalRefs += assetCheck.refs.length;
+
+			issues.push(
+				...assetCheck.issues
+			);
+		}
+
+		summary.push({
+			label: 'Local asset refs',
+			value: String(totalRefs),
+		});
+
+		return {
+			target: target.name,
+			kind: 'press',
+			summary,
+			issues,
+		};
+	}
+
+	async dryRunMarket(
+		target: TFile | TFolder
+	): Promise<DryRunReport> {
+		const issues: DryRunIssue[] = [];
+		const summary: DryRunReport['summary'] =
+			[];
+
+		const files =
+			this.collectMarkdownFiles(target);
+
+		if (files.length === 0) {
+			issues.push({
+				severity: 'error',
+				message:
+					target instanceof TFile
+						? 'Only Markdown files can be published'
+						: 'No Markdown files found in folder',
+			});
+
+			return {
+				target: target.name,
+				kind: 'market',
+				summary,
+				issues,
+			};
+		}
+
+		if (files.length > 1) {
+			issues.push({
+				severity: 'error',
+				message:
+					'Market supports only one Markdown file',
+			});
+		}
+
+		const file = files[0];
+
+		if (!file) {
+			return {
+				target: target.name,
+				kind: 'market',
+				summary,
+				issues,
+			};
+		}
+
+		const content =
+			await this.plugin.app.vault.read(
+				file
+			);
+
+		const frontmatter =
+			parseYaml(
+				content.match(
+					/^---\n([\s\S]*?)\n---/
+				)?.[1] || ''
+			) || {};
+
+		if (!frontmatter.kind) {
+			issues.push({
+				severity: 'error',
+				message:
+					'Missing frontmatter: kind',
+			});
+		}
+
+		if (
+			frontmatter.price === undefined
+		) {
+			issues.push({
+				severity: 'error',
+				message:
+					'Missing frontmatter: price',
+			});
+		}
+
+		if (!frontmatter.currency) {
+			issues.push({
+				severity: 'info',
+				message:
+					'currency not set, defaults to "USD"',
+			});
+		}
+
+		if (!frontmatter.status) {
+			issues.push({
+				severity: 'info',
+				message:
+					'status not set, defaults to "published"',
+			});
+		}
+
+		if (!frontmatter.visibility) {
+			issues.push({
+				severity: 'info',
+				message:
+					'visibility not set, defaults to "public"',
+			});
+		}
+
+		summary.push({
+			label: 'File',
+			value: file.name,
+		});
+
+		if (frontmatter.kind) {
+			summary.push({
+				label: 'Kind',
+				value: String(
+					frontmatter.kind
+				),
+			});
+		}
+
+		if (
+			frontmatter.price !== undefined
+		) {
+			summary.push({
+				label: 'Price',
+				value: `${frontmatter.price} ${frontmatter.currency || 'USD'}`,
+			});
+		}
+
+		const folder =
+			target instanceof TFolder
+				? target
+				: file.parent;
+
+		const autoDetected = folder
+			? this.plugin.assetService.autoDetectMarketAssets(
+					folder.path
+				)
+			: {
+					image: null,
+					attachment: null,
+				};
+
+		const image =
+			frontmatter.cover ||
+			frontmatter.image ||
+			autoDetected.image ||
+			null;
+
+		const attachment =
+			frontmatter.attachment ||
+			autoDetected.attachment ||
+			null;
+
+		if (!image) {
+			issues.push({
+				severity: 'warning',
+				message:
+					'No cover image detected',
+			});
+		} else {
+			summary.push({
+				label: 'Image',
+				value: image,
+			});
+		}
+
+		if (attachment) {
+			summary.push({
+				label: 'Attachment',
+				value: attachment,
+			});
+		}
+
+		const assetCheck =
+			await this.collectAssetIssues(
+				file,
+				content
+			);
+
+		issues.push(...assetCheck.issues);
+
+		summary.push({
+			label: 'Local asset refs',
+			value: String(
+				assetCheck.refs.length
+			),
+		});
+
+		return {
+			target: target.name,
+			kind: 'market',
+			summary,
+			issues,
+		};
 	}
 }

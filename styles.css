@@ -20,6 +20,106 @@
 	gap: 8px;
 }
 
+/* -------------------------------- */
+/* Dry-run modal                    */
+/* -------------------------------- */
+
+.sentilis-dry-run-allgood {
+	margin: 0;
+
+	padding: 12px 14px;
+
+	border-radius: 8px;
+
+	background: rgba(
+		61,
+		220,
+		132,
+		0.08
+	);
+
+	border: 1px solid
+		rgba(61, 220, 132, 0.25);
+
+	color: #3ddc84;
+
+	font-size: 13px;
+}
+
+.sentilis-dry-run-issues {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.sentilis-dry-run-issue {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+
+	padding: 10px 12px;
+
+	border-radius: 8px;
+
+	background: rgba(
+		255,
+		255,
+		255,
+		0.03
+	);
+
+	border: 1px solid
+		rgba(255, 255, 255, 0.05);
+
+	font-size: 13px;
+
+	line-height: 1.45;
+}
+
+.sentilis-dry-run-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+	margin-top: 1px;
+}
+
+.sentilis-dry-run-icon svg {
+	width: 16px;
+	height: 16px;
+}
+
+.sentilis-dry-run-error
+	.sentilis-dry-run-icon {
+	color: #ff6b6b;
+}
+
+.sentilis-dry-run-warning
+	.sentilis-dry-run-icon {
+	color: #ff9f43;
+}
+
+.sentilis-dry-run-info
+	.sentilis-dry-run-icon {
+	color: var(--text-muted);
+}
+
+.sentilis-dry-run-error {
+	border-color: rgba(
+		255,
+		107,
+		107,
+		0.25
+	);
+}
+
+.sentilis-dry-run-warning {
+	border-color: rgba(
+		255,
+		159,
+		67,
+		0.2
+	);
+}
+
 .sentilis-offline-indicator {
 	color: #ff4d4f;
 
