@@ -161,7 +161,7 @@ export class PublishService {
 
 	async validateMarketFile(
 		file: TFile,
-		folder: TFolder
+		folder?: TFolder
 	) {
 		const content =
 			await this.plugin.app.vault.read(
@@ -317,7 +317,7 @@ export class PublishService {
 						visibility:
 							payload.visibility as any,
 
-						image:
+						cover:
 							payload.image || null,
 
 						tags:
@@ -478,6 +478,10 @@ export class PublishService {
 					markdownFiles[0];
 			}
 
+			if (!mainFile) {
+				return false;
+			}
+
 			const mainPayload =
 				await this.validatePressFile(
 					mainFile
@@ -525,7 +529,7 @@ export class PublishService {
 							visibility:
 								payload.visibility as any,
 
-							image:
+							cover:
 								payload.image || null,
 
 							tags:
@@ -564,6 +568,7 @@ export class PublishService {
 
 			for (const file of markdownFiles) {
 				if (
+					!mainFile ||
 					file.path ===
 					mainFile.path
 				) {
@@ -634,15 +639,22 @@ export class PublishService {
 				markdownFiles.length;
 				i++
 			) {
+				const content = allContent[i];
+				const file = markdownFiles[i];
+
+				if (!content || !file) {
+					continue;
+				}
+
 				const normalized =
 					this.plugin.assetService.normalizeMarkdown(
-						allContent[i]
+						content
 					);
 
 				const assetMap =
 					await this.plugin.assetService.buildAssetMap(
 						normalized,
-						markdownFiles[i]
+						file
 					);
 
 				assetMap.forEach(
@@ -745,7 +757,8 @@ export class PublishService {
 
 		const validated =
 			await this.validateMarketFile(
-				file
+				file,
+				file.parent instanceof TFolder ? file.parent : undefined
 			);
 
 		if (!validated) {
@@ -816,14 +829,9 @@ export class PublishService {
 				file
 			);
 
-		const normalizedRawContent =
-			this.plugin.assetService.normalizeMarkdown(
-				rawContent
-			);
-
 		const assets =
 			await this.plugin.assetService.buildAssetMap(
-				normalizedRawContent,
+				normalizedContent,
 				file
 			);
 
@@ -901,6 +909,10 @@ export class PublishService {
 			const file =
 				markdownFiles[0];
 
+			if (!file) {
+				return false;
+			}
+
 			const validated =
 				await this.validateMarketFile(
 					file,
@@ -931,45 +943,44 @@ export class PublishService {
 
 			const upload =
 				toProductUpload({
-					main: {
-						metadata: {
-							name: validated.name,
+				main: {
+					metadata: {
+						name: validated.name,
 
-							slug: validated.slug,
+						slug: validated.slug,
 
-							kind: validated.kind,
+						kind: validated.kind,
 
-							price:
-								validated.price,
+						price:
+							validated.price,
 
-							currency:
-								validated.currency,
+						currency:
+							validated.currency,
 
-							category:
-								validated.category,
+						category:
+							validated.category,
 
-							status:
-								validated.status,
+						status:
+							validated.status,
 
-							visibility:
-								validated.visibility,
+						visibility:
+							validated.visibility,
 
-							image:
-								validated.image ||
-								null,
+						image:
+							validated.image || null,
 
-							attachment:
-								validated.attachment ||
-								null,
-						},
+						attachment:
+							validated.attachment ||
+							null,
+					},
 
-						content:
-							normalizedContent,
+					content:
+						normalizedContent,
 
-						images:
-							this.plugin.assetService.buildImageObjects(
-								normalizedContent
-							),
+					images:
+						this.plugin.assetService.buildImageObjects(
+							normalizedContent
+						),
 
 						videos:
 							this.plugin.assetService.extractVideoLinks(
@@ -981,8 +992,8 @@ export class PublishService {
 								validated.content,
 								file
 							),
-					},
-				} as any);
+				},
+			} as any);
 
 			const rawContent =
 				await this.plugin.app.vault.read(

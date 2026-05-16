@@ -52,7 +52,7 @@ export class SentilisSidebarView extends ItemView {
 	async onOpen() {
 		this.registerEvent(
 			this.app.workspace.on(
-				SENTILIS_EVENTS.PRESS_PUBLISHED,
+				SENTILIS_EVENTS.PRESS_PUBLISHED as any,
 				() => {
 					this.render();
 				}
@@ -61,7 +61,7 @@ export class SentilisSidebarView extends ItemView {
 
 		this.registerEvent(
 			this.app.workspace.on(
-				SENTILIS_EVENTS.NETWORK_STATUS_CHANGED,
+				SENTILIS_EVENTS.NETWORK_STATUS_CHANGED as any,
 				() => {
 					this.render();
 				}
@@ -70,7 +70,7 @@ export class SentilisSidebarView extends ItemView {
 
 		this.registerEvent(
 			this.app.workspace.on(
-				SENTILIS_EVENTS.PROFILE_CHANGED,
+				SENTILIS_EVENTS.PROFILE_CHANGED as any,
 				() => {
 					this.render();
 				}
@@ -297,7 +297,7 @@ export class SentilisSidebarView extends ItemView {
 
 						menu.addItem(
 							(itemMenu) => {
-								itemMenu.dom.addClass(
+								(itemMenu as any).dom?.addClass(
 									'sentilis-danger-menu-item'
 								);
 
@@ -503,7 +503,7 @@ export class SentilisSidebarView extends ItemView {
 
 						menu.addItem(
 							(itemMenu) => {
-								itemMenu.dom.addClass(
+								(itemMenu as any).dom?.addClass(
 									'sentilis-danger-menu-item'
 								);
 

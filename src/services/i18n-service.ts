@@ -18,16 +18,14 @@ export class I18nService {
 			moment.locale();
 
 		const language =
-			translations[
-				obsidianLanguage
-			]
+			translations[obsidianLanguage as keyof typeof translations]
 				? obsidianLanguage
 				: 'en';
 
 		const keys = key.split('.');
 
 		let value: any =
-			translations[language];
+			translations[language as keyof typeof translations];
 
 		for (const k of keys) {
 			value = value?.[k];

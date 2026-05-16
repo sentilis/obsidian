@@ -74,6 +74,7 @@ export class AssetService {
 	) {
 		const links: {
 			src: string;
+			alt: string;
 		}[] = [];
 
 		const regex =
@@ -87,9 +88,12 @@ export class AssetService {
 					content
 				)) !== null
 		) {
-			links.push({
-				src: match[1],
-			});
+			if (match[1]) {
+				links.push({
+					src: match[1],
+					alt: '',
+				});
+			}
 		}
 
 		return links;
@@ -100,7 +104,8 @@ export class AssetService {
 		file: TFile
 	) {
 		const links: {
-			label: string;
+			alt: string;
+			href: string;
 			targetSlug: string;
 		}[] = [];
 
@@ -122,6 +127,7 @@ export class AssetService {
 				match[2];
 
 			if (
+				!target ||
 				target.startsWith(
 					'http'
 				)
@@ -144,11 +150,7 @@ export class AssetService {
 				continue;
 			}
 
-			links.push({
-				label,
-
-				targetSlug:
-					linkedFile.basename
+			const slug = linkedFile.basename
 						.toLowerCase()
 						.replace(
 							/[^\w\s-]/g,
@@ -157,7 +159,12 @@ export class AssetService {
 						.replace(
 							/\s+/g,
 							'-'
-						),
+						);
+
+			links.push({
+				alt: label || '',
+				href: slug,
+				targetSlug: slug,
 			});
 		}
 
@@ -198,7 +205,7 @@ export class AssetService {
 
 		const frontmatter =
 			parseYaml(
-				frontmatterMatch[1]
+				frontmatterMatch[1] || ''
 			);
 
 		if (

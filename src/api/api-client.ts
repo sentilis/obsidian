@@ -25,7 +25,7 @@ export class ApiClient {
 		url: string,
 		method: string = 'GET',
 		token?: string,
-		body?: BodyInit
+		body?: string | ArrayBuffer
 	): Promise<ApiResponse<T>> {
 		try {
 			const response =
