@@ -13,6 +13,8 @@ import { PressDetailModal } from '../modals/press-detail-modal';
 
 import { ProductDetailModal } from '../modals/product-detail-modal';
 
+import { ConfirmModal } from '../modals/confirm-modal';
+
 import { SENTILIS_EVENTS } from '../constants/events';
 
 export class SentilisSidebarView extends ItemView {
@@ -52,36 +54,58 @@ export class SentilisSidebarView extends ItemView {
 	async onOpen() {
 		this.registerEvent(
 			this.app.workspace.on(
-				SENTILIS_EVENTS.PRESS_PUBLISHED as any,
+				SENTILIS_EVENTS.PRESS_PUBLISHED as never,
 				() => {
-					this.render();
+					void this.render();
 				}
 			)
 		);
 
 		this.registerEvent(
 			this.app.workspace.on(
-				SENTILIS_EVENTS.NETWORK_STATUS_CHANGED as any,
+				SENTILIS_EVENTS.NETWORK_STATUS_CHANGED as never,
 				() => {
-					this.render();
+					void this.render();
 				}
 			)
 		);
 
 		this.registerEvent(
 			this.app.workspace.on(
-				SENTILIS_EVENTS.PROFILE_CHANGED as any,
+				SENTILIS_EVENTS.PROFILE_CHANGED as never,
 				() => {
-					this.render();
+					void this.render();
 				}
 			)
 		);
 
-		this.render();
+		await this.render();
 	}
 
 	async onClose() {
 		// cleanup future logic
+	}
+
+	private confirmDelete(
+		name: string,
+		onConfirm: () => Promise<void>
+	) {
+		new ConfirmModal(this.app, {
+			title: this.plugin.t(
+				'common.confirmDeleteTitle'
+			),
+			message: `${this.plugin.t(
+				'rowElement.confirmDelete'
+			)} "${name}"?`,
+			confirmLabel: this.plugin.t(
+				'rowElement.delete'
+			),
+			cancelLabel: this.plugin.t(
+				'common.cancel'
+			),
+			danger: true,
+			onConfirm,
+		}).open();
 	}
 
 	async render() {
@@ -149,7 +173,7 @@ export class SentilisSidebarView extends ItemView {
 				this.activeTab =
 					'press';
 
-				this.render();
+				void this.render();
 			}
 		);
 
@@ -159,7 +183,7 @@ export class SentilisSidebarView extends ItemView {
 				this.activeTab =
 					'market';
 
-				this.render();
+				void this.render();
 			}
 		);
 
@@ -297,32 +321,27 @@ export class SentilisSidebarView extends ItemView {
 
 						menu.addItem(
 							(itemMenu) => {
-								(itemMenu as any).dom?.addClass(
-									'sentilis-danger-menu-item'
-								);
-
 								itemMenu
 									.setTitle(
-										'Delete'
+										this.plugin.t(
+											'rowElement.delete'
+										)
 									)
 									.setIcon(
 										'trash'
 									)
+									.setSection(
+										'danger'
+									)
 									.onClick(
-										async () => {
-											const confirmed =
-												window.confirm(
-													`Delete "${item.name}"?`
-												);
-
-											if (
-												!confirmed
-											) {
-												return;
-											}
-
-											await this.plugin.publishService.deletePress(
-												item.id
+										() => {
+											this.confirmDelete(
+												item.name,
+												async () => {
+													await this.plugin.publishService.deletePress(
+														item.id
+													);
+												}
 											);
 										}
 									);
@@ -503,10 +522,6 @@ export class SentilisSidebarView extends ItemView {
 
 						menu.addItem(
 							(itemMenu) => {
-								(itemMenu as any).dom?.addClass(
-									'sentilis-danger-menu-item'
-								);
-
 								itemMenu
 									.setTitle(
 										this.plugin.t(
@@ -516,23 +531,18 @@ export class SentilisSidebarView extends ItemView {
 									.setIcon(
 										'trash'
 									)
+									.setSection(
+										'danger'
+									)
 									.onClick(
-										async () => {
-											const confirmed =
-												window.confirm(
-													`${this.plugin.t(
-														'rowElement.confirmDelete'
-													)} "${item.name}"?`
-												);
-
-											if (
-												!confirmed
-											) {
-												return;
-											}
-
-											await this.plugin.publishService.deleteMarket(
-												item.id
+										() => {
+											this.confirmDelete(
+												item.name,
+												async () => {
+													await this.plugin.publishService.deleteMarket(
+														item.id
+													);
+												}
 											);
 										}
 									);

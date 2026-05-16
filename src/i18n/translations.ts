@@ -1,5 +1,12 @@
 export const translations = {
 	en: {
+		common: {
+			cancel: 'Cancel',
+			confirm: 'Confirm',
+			confirmDeleteTitle:
+				'Confirm deletion',
+		},
+
 		settings: {
 			openSidebar: 'Open Sidebar',
 
@@ -174,6 +181,13 @@ export const translations = {
 	},
 
 	es: {
+		common: {
+			cancel: 'Cancelar',
+			confirm: 'Confirmar',
+			confirmDeleteTitle:
+				'Confirmar eliminación',
+		},
+
 		settings: {
 			title: 'Configuración de Sentilis',
 

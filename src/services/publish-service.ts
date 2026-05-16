@@ -449,7 +449,7 @@ export class PublishService {
 				markdownFiles.length === 0
 			) {
 				new Notice(
-					'No markdown files found in folder'
+					'No Markdown files found in folder'
 				);
 
 				return false;
@@ -468,7 +468,7 @@ export class PublishService {
 					1
 				) {
 					new Notice(
-						'Multiple markdown files found without index.md'
+						'Multiple Markdown files found without index.md'
 					);
 
 					return false;
@@ -862,8 +862,12 @@ export class PublishService {
 			return false;
 		}
 
+		const slug =
+			(response.data as { slug?: string } | undefined)
+				?.slug ?? '';
+
 		new Notice(
-			`Market published: ${response.data.slug}`
+			`Market published: ${slug}`
 		);
 
 		this.plugin.app.workspace.trigger(
@@ -890,7 +894,7 @@ export class PublishService {
 				markdownFiles.length === 0
 			) {
 				new Notice(
-					'No markdown files found in folder'
+					'No Markdown files found in folder'
 				);
 
 				return false;
@@ -900,7 +904,7 @@ export class PublishService {
 				markdownFiles.length > 1
 			) {
 				new Notice(
-					'Market supports only one markdown file'
+					'Market supports only one Markdown file'
 				);
 
 				return false;

@@ -18,12 +18,6 @@ export class SentilisSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {
-			text: this.plugin.t(
-				'settings.title'
-			)
-		});
-
 		new Setting(containerEl)
 			.setName(this.plugin.t('addProfile.addNewToken'))
 			.setDesc(this.plugin.t('addProfile.addNewTokenDesc'))
@@ -86,11 +80,9 @@ export class SentilisSettingTab extends PluginSettingTab {
 
 
 
-		containerEl.createEl('hr');
-
-		containerEl.createEl('h3', {
-			text: this.plugin.t('settings.profiles'),
-		});
+		new Setting(containerEl)
+			.setName(this.plugin.t('settings.profiles'))
+			.setHeading();
 
 		 this.plugin.settings.profiles.forEach(
 			(profile) => {
