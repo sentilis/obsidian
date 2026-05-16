@@ -78,19 +78,21 @@ export class ProfileSwitcherModal extends SuggestModal<SentilisProfile> {
 		});
 	}
 
-	async onChooseSuggestion(
+	onChooseSuggestion(
 		profile: SentilisProfile
-	) {
-		await this.plugin.profileService.setDefaultProfile(
-			profile.id
-		);
+	): void {
+		void (async () => {
+			await this.plugin.profileService.setDefaultProfile(
+				profile.id
+			);
 
-		this.app.workspace.trigger(
-			SENTILIS_EVENTS.PROFILE_CHANGED
-		);
+			this.app.workspace.trigger(
+				SENTILIS_EVENTS.PROFILE_CHANGED
+			);
 
-		new Notice(
-			`Active profile: ${profile.username}`
-		);
+			new Notice(
+				`Active profile: ${profile.username}`
+			);
+		})();
 	}
 }

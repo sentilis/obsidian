@@ -1,4 +1,4 @@
-import { Notice, Plugin, TFile, TFolder } from "obsidian";
+import { Menu, MenuItem, Notice, Plugin, TFile, TFolder } from "obsidian";
 
 import { DEFAULT_SETTINGS } from "./settings/settings";
 import { SentilisPluginSettings } from "./settings/types";
@@ -15,6 +15,10 @@ import { PublishService } from "./services/publish-service";
 import { I18nService } from "./services/i18n-service";
 import { NetworkService } from "./services/network-service";
 import { AssetService } from "./services/asset-service";
+
+type MenuItemWithSubmenu = MenuItem & {
+	setSubmenu(): Menu;
+};
 
 export default class SentilisPlugin extends Plugin {
 	settings: SentilisPluginSettings;
@@ -72,7 +76,7 @@ export default class SentilisPlugin extends Plugin {
 					active: true,
 				});
 
-				this.app.workspace.revealLeaf(leaf);
+				await this.app.workspace.revealLeaf(leaf);
 			},
 		});
 
@@ -87,18 +91,14 @@ export default class SentilisPlugin extends Plugin {
 			this.app.workspace.on("file-menu", (menu, file) => {
 				const profileLabel = this.getCurrentProfileLabel();
 
-				const t = (key: string): string => {
-					return this.i18nService.t(key);
-				};
-
 				menu.addItem((item) => {
 					item.setTitle(`Sentilis (${profileLabel})`).setIcon(
 						"layers",
 					);
 
-					const submenu = (item as any).setSubmenu();
+					const submenu = (item as MenuItemWithSubmenu).setSubmenu();
 
-					submenu.addItem((subItem: any) => {
+					submenu.addItem((subItem) => {
 						subItem
 							.setTitle(this.t("publish.press"))
 							.setIcon("megaphone")
@@ -128,7 +128,7 @@ export default class SentilisPlugin extends Plugin {
 							});
 					});
 
-					submenu.addItem((subItem: any) => {
+					submenu.addItem((subItem) => {
 						subItem
 							.setTitle(this.t("dryRun.pressLabel"))
 							.setIcon("flask-conical")
@@ -149,7 +149,7 @@ export default class SentilisPlugin extends Plugin {
 
 					submenu.addSeparator();
 
-					submenu.addItem((subItem: any) => {
+					submenu.addItem((subItem) => {
 						subItem
 							.setTitle(this.t("publish.market"))
 							.setIcon("shopping-bag")
@@ -179,7 +179,7 @@ export default class SentilisPlugin extends Plugin {
 							});
 					});
 
-					submenu.addItem((subItem: any) => {
+					submenu.addItem((subItem) => {
 						subItem
 							.setTitle(this.t("dryRun.marketLabel"))
 							.setIcon("flask-conical")
@@ -207,11 +207,12 @@ export default class SentilisPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData(),
-		);
+		const saved = (await this.loadData()) as Partial<SentilisPluginSettings> | null;
+
+		this.settings = {
+			...DEFAULT_SETTINGS,
+			...(saved ?? {}),
+		};
 	}
 
 	async saveSettings() {

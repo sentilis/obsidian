@@ -1,6 +1,5 @@
 import {
 	TFile,
-	TFolder,
 	parseYaml,
 } from 'obsidian';
 
@@ -206,10 +205,10 @@ export class AssetService {
 		const frontmatter =
 			parseYaml(
 				frontmatterMatch[1] || ''
-			);
+			) as Record<string, unknown> | null | undefined;
 
 		if (
-			frontmatter?.image
+			typeof frontmatter?.image === 'string'
 		) {
 			refs.push(
 				frontmatter.image
@@ -217,7 +216,7 @@ export class AssetService {
 		}
 
 		if (
-			frontmatter?.attachment
+			typeof frontmatter?.attachment === 'string'
 		) {
 			refs.push(
 				frontmatter.attachment

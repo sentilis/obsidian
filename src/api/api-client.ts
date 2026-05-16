@@ -151,10 +151,15 @@ export class ApiClient {
 				};
 			}
 
+			const envelope =
+				response.json as
+					| { data?: T }
+					| undefined;
+
 			return {
 				success: true,
 
-				data: response.json?.data,
+				data: envelope?.data,
 			};
 		} catch (error) {
 			console.error(error);
@@ -200,10 +205,19 @@ export class ApiClient {
 				};
 			}
 
+			const envelope =
+				response.json as
+					| {
+							data?: {
+								username?: string;
+							};
+					  }
+					| undefined;
+
 			return {
 				success: true,
 
-				data: response.json?.data
+				data: envelope?.data
 					?.username,
 			};
 		} catch (error) {

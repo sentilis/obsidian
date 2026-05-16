@@ -14,6 +14,11 @@ import {
 } from '../types/dry-run';
 import { SENTILIS_EVENTS } from '../constants/events';
 
+import type {
+	LifecycleStatus,
+	LifecycleVisibility,
+} from '@sentilis/core';
+
 import {
 	buildPressFormData,
 	toPressUpload,
@@ -24,7 +29,115 @@ import {
 import {
 	buildProductFormData,
 	toProductUpload,
+	type ProductFile,
+	type ProductType,
 } from '@sentilis/core/market';
+
+interface PressFrontmatter {
+	name?: unknown;
+	slug?: unknown;
+	status?: unknown;
+	visibility?: unknown;
+	tags?: unknown;
+	authors?: unknown;
+	cover?: unknown;
+	image?: unknown;
+}
+
+interface MarketFrontmatter extends PressFrontmatter {
+	kind?: unknown;
+	price?: unknown;
+	currency?: unknown;
+	category?: unknown;
+	attachment?: unknown;
+}
+
+interface MarketPublishPayload {
+	name: string;
+	slug: string;
+	kind: ProductType;
+	price: number;
+	currency: string;
+	category: string | null;
+	status: LifecycleStatus;
+	visibility: LifecycleVisibility;
+	content: string;
+	image: string | null;
+	attachment: string | null;
+}
+
+const VALID_STATUS: ReadonlySet<LifecycleStatus> = new Set<LifecycleStatus>([
+	'draft',
+	'published',
+	'archived',
+]);
+
+const VALID_VISIBILITY: ReadonlySet<LifecycleVisibility> = new Set<LifecycleVisibility>([
+	'public',
+	'private',
+	'protected',
+	'prime',
+]);
+
+const VALID_PRODUCT_KIND: ReadonlySet<ProductType> = new Set<ProductType>([
+	'service',
+	'product',
+	'digital',
+]);
+
+function asString(value: unknown): string | null {
+	return typeof value === 'string' ? value : null;
+}
+
+function asStringList(value: unknown): string[] {
+	if (Array.isArray(value)) {
+		return value.filter(
+			(item): item is string => typeof item === 'string'
+		);
+	}
+
+	if (typeof value === 'string') {
+		return value
+			.split(',')
+			.map((item) => item.trim())
+			.filter((item) => item.length > 0);
+	}
+
+	return [];
+}
+
+function asStatus(value: unknown): LifecycleStatus {
+	if (
+		typeof value === 'string' &&
+		VALID_STATUS.has(value as LifecycleStatus)
+	) {
+		return value as LifecycleStatus;
+	}
+
+	return 'published';
+}
+
+function asVisibility(value: unknown): LifecycleVisibility {
+	if (
+		typeof value === 'string' &&
+		VALID_VISIBILITY.has(value as LifecycleVisibility)
+	) {
+		return value as LifecycleVisibility;
+	}
+
+	return 'public';
+}
+
+function asProductKind(value: unknown): ProductType | null {
+	if (
+		typeof value === 'string' &&
+		VALID_PRODUCT_KIND.has(value as ProductType)
+	) {
+		return value as ProductType;
+	}
+
+	return null;
+}
 
 
 export class PublishService {
@@ -97,6 +210,22 @@ export class PublishService {
 		);
 	}
 
+	private parseMarketFrontmatter(
+		content: string
+	): MarketFrontmatter {
+		const raw = parseYaml(
+			content.match(
+				/^---\n([\s\S]*?)\n---/
+			)?.[1] || ''
+		) as unknown;
+
+		if (raw && typeof raw === 'object') {
+			return raw as MarketFrontmatter;
+		}
+
+		return {};
+	}
+
 	async validatePressFile(
 		file: TFile
 	): Promise<PressPublishPayload | null> {
@@ -112,45 +241,21 @@ export class PublishService {
 				);
 
 			const frontmatter =
-				cache?.frontmatter || {};
+				(cache?.frontmatter as PressFrontmatter | undefined) ?? {};
 
 			const inferredName =
 				file.basename;
 
 			const name =
-				frontmatter.name ||
+				asString(frontmatter.name) ??
 				inferredName;
 
 			const slug =
-				frontmatter.slug ||
+				asString(frontmatter.slug) ??
 				this.slugify(name);
 
-				const tags = Array.isArray(
-					frontmatter.tags
-				)
-					? frontmatter.tags
-					: typeof frontmatter.tags ===
-						'string'
-						? frontmatter.tags
-								.split(',')
-								.map((tag: string) =>
-									tag.trim()
-								)
-						: [];
-
-				const authors = Array.isArray(
-					frontmatter.authors
-				)
-					? frontmatter.authors
-					: typeof frontmatter.authors ===
-						'string'
-						? frontmatter.authors
-								.split(',')
-								.map(
-									(author: string) =>
-										author.trim()
-								)
-						: [];
+			const tags = asStringList(frontmatter.tags);
+			const authors = asStringList(frontmatter.authors);
 
 			const payload: PressPublishPayload =
 				{
@@ -163,29 +268,25 @@ export class PublishService {
 							content
 						),
 
-					status:
-						frontmatter.status ||
-						'published',
+					status: asStatus(frontmatter.status),
 
-					visibility:
-						frontmatter.visibility ||
-						'public',
-						
+					visibility: asVisibility(frontmatter.visibility),
+
 					tags,
 					authors,
 
 					image:
-						frontmatter.cover ||
-						frontmatter.image ||
+						asString(frontmatter.cover) ??
+						asString(frontmatter.image) ??
 						null,
 				};
 
 			return payload;
-		} catch (error: any) {
+		} catch (error) {
 			console.error(error);
 
 			new Notice(
-				error?.message ||
+				(error as Error)?.message ||
 					this.plugin.t(
 						'publish.validationFailed'
 					)
@@ -198,31 +299,29 @@ export class PublishService {
 	async validateMarketFile(
 		file: TFile,
 		folder?: TFolder
-	) {
+	): Promise<MarketPublishPayload | null> {
 		const content =
 			await this.plugin.app.vault.read(
 				file
 			);
 
 		const frontmatter =
-			parseYaml(
-				content.match(
-					/^---\n([\s\S]*?)\n---/
-				)?.[1] || ''
-			) || {};
+			this.parseMarketFrontmatter(content);
 
 		const inferredName =
 			file.basename;
 
 		const name =
-			frontmatter.name ||
+			asString(frontmatter.name) ??
 			inferredName;
 
 		const slug =
-			frontmatter.slug ||
+			asString(frontmatter.slug) ??
 			this.slugify(name);
 
-		if (!frontmatter.kind) {
+		const kind = asProductKind(frontmatter.kind);
+
+		if (!kind) {
 			new Notice(
 				'Missing frontmatter: kind'
 			);
@@ -231,8 +330,7 @@ export class PublishService {
 		}
 
 		if (
-			frontmatter.price ===
-			undefined
+			typeof frontmatter.price !== 'number'
 		) {
 			new Notice(
 				this.plugin.t(
@@ -260,44 +358,37 @@ export class PublishService {
 				};
 
 		const image =
-			frontmatter.cover ||
-			frontmatter.image ||
-			autoDetected.image ||
-			null;
+			asString(frontmatter.cover) ??
+			asString(frontmatter.image) ??
+			autoDetected.image;
 
 		const attachment =
-			frontmatter.attachment ||
-			autoDetected.attachment ||
-			null;
-		
+			asString(frontmatter.attachment) ??
+			autoDetected.attachment;
+
 
 		return {
 			name,
 
 			slug,
 
-			kind: frontmatter.kind,
+			kind,
 
 			price: frontmatter.price,
 
 			currency:
-				frontmatter.currency ||
+				asString(frontmatter.currency) ??
 				'USD',
 
 			category:
-				frontmatter.category ||
-				null,
+				asString(frontmatter.category),
 
-			status:
-				frontmatter.status ||
-				'published',
+			status: asStatus(frontmatter.status),
 
-			visibility:
-				frontmatter.visibility ||
-				'public',
+			visibility: asVisibility(frontmatter.visibility),
 
 			content: markdownContent,
-			
+
 			image,
 			attachment,
 		};
@@ -347,20 +438,16 @@ export class PublishService {
 
 						category: null,
 
-						status:
-							payload.status as any,
+						status: payload.status,
 
-						visibility:
-							payload.visibility as any,
+						visibility: payload.visibility,
 
 						cover:
-							payload.image || null,
+							payload.image,
 
-						tags:
-							payload.tags || [],
+						tags: payload.tags,
 
-						authors:
-							payload.authors || [],
+						authors: payload.authors,
 					},
 
 					images:
@@ -527,7 +614,7 @@ export class PublishService {
 			const buildPressFile =
 				async (
 					file: TFile,
-					payload: any
+					payload: PressPublishPayload
 				): Promise<PressFile> => {
 					const rawContent =
 						await this.plugin.app.vault.read(
@@ -556,20 +643,16 @@ export class PublishService {
 							category:
 								null,
 
-							status:
-								payload.status as any,
+							status: payload.status,
 
-							visibility:
-								payload.visibility as any,
+							visibility: payload.visibility,
 
 							cover:
-								payload.image || null,
+								payload.image,
 
-							tags:
-								payload.tags || [],
+							tags: payload.tags,
 
-							authors:
-								payload.authors || [],
+							authors: payload.authors,
 						},
 
 						images:
@@ -759,6 +842,54 @@ export class PublishService {
 		}
 	}
 
+	private buildProductFile(
+		file: TFile,
+		validated: MarketPublishPayload,
+		normalizedContent: string
+	): ProductFile {
+		return {
+			filePath: file.path,
+
+			content: normalizedContent,
+
+			metadata: {
+				name: validated.name,
+
+				slug: validated.slug,
+
+				kind: validated.kind,
+
+				price: validated.price,
+
+				currency: validated.currency,
+
+				category: validated.category,
+
+				status: validated.status,
+
+				visibility: validated.visibility,
+
+				image: validated.image,
+
+				attachment: validated.attachment,
+
+				pressUrl: null,
+
+				description: null,
+			},
+
+			images:
+				this.plugin.assetService.buildImageObjects(
+					normalizedContent
+				),
+
+			videos:
+				this.plugin.assetService.extractVideoLinks(
+					normalizedContent
+				),
+		};
+	}
+
 	async publishMarketFile(
 		file: TFile
 	): Promise<boolean> {
@@ -802,64 +933,14 @@ export class PublishService {
 				validated.content
 			);
 
-		const upload =
-			toProductUpload({
-				main: {
-					metadata: {
-						name: validated.name,
-
-						slug: validated.slug,
-
-						kind: validated.kind,
-
-						price:
-							validated.price,
-
-						currency:
-							validated.currency,
-
-						category:
-							validated.category,
-
-						status:
-							validated.status,
-
-						visibility:
-							validated.visibility,
-
-						image:
-							validated.image || null,
-
-						attachment:
-							validated.attachment ||
-							null,
-					},
-
-					content:
-						normalizedContent,
-
-					images:
-						this.plugin.assetService.buildImageObjects(
-							normalizedContent
-						),
-
-					videos:
-						this.plugin.assetService.extractVideoLinks(
-							normalizedContent
-						),
-
-					links:
-						this.plugin.assetService.extractMarkdownLinks(
-							validated.content,
-							file
-						),
-				},
-			} as any);
-
-		const rawContent =
-			await this.plugin.app.vault.read(
-				file
+		const productFile =
+			this.buildProductFile(
+				file,
+				validated,
+				normalizedContent
 			);
+
+		const upload = toProductUpload(productFile);
 
 		const assets =
 			await this.plugin.assetService.buildAssetMap(
@@ -971,59 +1052,14 @@ export class PublishService {
 					validated.content
 				);
 
-			const upload =
-				toProductUpload({
-				main: {
-					metadata: {
-						name: validated.name,
+			const productFile =
+				this.buildProductFile(
+					file,
+					validated,
+					normalizedContent
+				);
 
-						slug: validated.slug,
-
-						kind: validated.kind,
-
-						price:
-							validated.price,
-
-						currency:
-							validated.currency,
-
-						category:
-							validated.category,
-
-						status:
-							validated.status,
-
-						visibility:
-							validated.visibility,
-
-						image:
-							validated.image || null,
-
-						attachment:
-							validated.attachment ||
-							null,
-					},
-
-					content:
-						normalizedContent,
-
-					images:
-						this.plugin.assetService.buildImageObjects(
-							normalizedContent
-						),
-
-						videos:
-							this.plugin.assetService.extractVideoLinks(
-								normalizedContent
-							),
-
-						links:
-							this.plugin.assetService.extractMarkdownLinks(
-								validated.content,
-								file
-							),
-				},
-			} as any);
+			const upload = toProductUpload(productFile);
 
 			const rawContent =
 				await this.plugin.app.vault.read(
@@ -1343,7 +1379,7 @@ export class PublishService {
 				);
 
 			const frontmatter =
-				cache?.frontmatter || {};
+				(cache?.frontmatter as PressFrontmatter | undefined) ?? {};
 
 			if (!frontmatter.status) {
 				issues.push({
@@ -1437,11 +1473,7 @@ export class PublishService {
 			);
 
 		const frontmatter =
-			parseYaml(
-				content.match(
-					/^---\n([\s\S]*?)\n---/
-				)?.[1] || ''
-			) || {};
+			this.parseMarketFrontmatter(content);
 
 		if (!frontmatter.kind) {
 			issues.push({
@@ -1452,7 +1484,7 @@ export class PublishService {
 		}
 
 		if (
-			frontmatter.price === undefined
+			typeof frontmatter.price !== 'number'
 		) {
 			issues.push({
 				severity: 'error',
@@ -1490,21 +1522,23 @@ export class PublishService {
 			value: file.name,
 		});
 
-		if (frontmatter.kind) {
+		const kindString = asString(frontmatter.kind);
+		if (kindString) {
 			summary.push({
 				label: 'Kind',
-				value: String(
-					frontmatter.kind
-				),
+				value: kindString,
 			});
 		}
 
 		if (
-			frontmatter.price !== undefined
+			typeof frontmatter.price === 'number'
 		) {
+			const currencyString =
+				asString(frontmatter.currency) ?? 'USD';
+
 			summary.push({
 				label: 'Price',
-				value: `${frontmatter.price} ${frontmatter.currency || 'USD'}`,
+				value: `${frontmatter.price} ${currencyString}`,
 			});
 		}
 
@@ -1523,15 +1557,13 @@ export class PublishService {
 				};
 
 		const image =
-			frontmatter.cover ||
-			frontmatter.image ||
-			autoDetected.image ||
-			null;
+			asString(frontmatter.cover) ??
+			asString(frontmatter.image) ??
+			autoDetected.image;
 
 		const attachment =
-			frontmatter.attachment ||
-			autoDetected.attachment ||
-			null;
+			asString(frontmatter.attachment) ??
+			autoDetected.attachment;
 
 		if (!image) {
 			issues.push({

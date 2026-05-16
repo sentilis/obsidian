@@ -52,6 +52,6 @@ export class ActionModal extends SuggestModal<SentilisAction> {
 	onChooseSuggestion(
 		action: SentilisAction
 	) {
-		action.onClick();
+		void action.onClick();
 	}
 }
