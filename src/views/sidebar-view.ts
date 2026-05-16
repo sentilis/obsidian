@@ -48,7 +48,7 @@ export class SentilisSidebarView extends ItemView {
 	}
 
 	getIcon(): string {
-		return 'globe';
+		return 'layers';
 	}
 
 	async onOpen() {
@@ -120,10 +120,15 @@ export class SentilisSidebarView extends ItemView {
 		const currentProfile =
 			this.plugin.getCurrentProfile();
 
+		const sectionLabel =
+			this.activeTab === 'press'
+				? 'Press'
+				: 'Market';
+
 		contentEl.createEl('h2', {
 			text: currentProfile
-				? `Sentilis (${currentProfile.username})`
-				: 'Sentilis',
+				? `Sentilis ${sectionLabel} (${currentProfile.username})`
+				: `Sentilis ${sectionLabel}`,
 		});
 
 		if (
@@ -229,12 +234,6 @@ export class SentilisSidebarView extends ItemView {
 		if (
 			this.activeTab === 'press'
 		) {
-			contentEl.createEl('h3', {
-				text: this.plugin.t(
-					'sidebar.recentPress'
-				),
-			});
-
 			if (press.length === 0) {
 				contentEl.createEl('p', {
 					text: this.plugin.t(
@@ -354,86 +353,24 @@ export class SentilisSidebarView extends ItemView {
 					}
 				);
 
-				const headerEl =
-					itemEl.createDiv({
-						cls: 'sentilis-list-header',
-					});
-
-				const iconEl =
-					headerEl.createSpan({
-						cls: 'sentilis-list-icon',
-					});
-
-				setIcon(
-					iconEl,
-					'newspaper'
-				);
-
-				const titleWrapper =
-					headerEl.createDiv({
-						cls: 'sentilis-row-title-wrapper',
-					});
-
-				titleWrapper.createEl(
-					'strong',
-					{
-						text: item.name,
-					}
-				);
-
-				const chevron =
-					headerEl.createSpan({
-						cls: 'sentilis-row-chevron',
-					});
-
-				setIcon(
-					chevron,
-					'chevron-right'
-				);
-
-				const metaEl =
-					itemEl.createDiv({
-						cls: 'sentilis-list-meta',
-					});
-
-				metaEl.createSpan({
-					text: item.status,
-
-					cls: 'sentilis-badge',
+				this.renderListRow(itemEl, {
+					title: item.name,
+					meta: [
+						item.status,
+						item.visibility,
+						item.createdAt
+							? new Date(
+									item.createdAt
+								).toLocaleDateString()
+							: null,
+					],
 				});
-
-				metaEl.createSpan({
-					text: item.visibility,
-
-					cls: 'sentilis-badge sentilis-visibility-badge',
-				});
-
-				if (
-					item.createdAt
-				) {
-					const date =
-						new Date(
-							item.createdAt
-						).toLocaleDateString();
-
-					metaEl.createSpan({
-						text: date,
-
-						cls: 'sentilis-list-date',
-					});
-				}
 			});
 		}
 
 		if (
 			this.activeTab === 'market'
 		) {
-			contentEl.createEl('h3', {
-				text: this.plugin.t(
-					'sidebar.recentMarket'
-				),
-			});
-
 			if (
 				products.length === 0
 			) {
@@ -555,69 +492,75 @@ export class SentilisSidebarView extends ItemView {
 					}
 				);
 
-				const headerEl =
-					itemEl.createDiv({
-						cls: 'sentilis-list-header',
-					});
-
-				const iconEl =
-					headerEl.createSpan({
-						cls: 'sentilis-list-icon',
-					});
-
-				setIcon(
-					iconEl,
-					'package'
-				);
-
-				const titleWrapper =
-					headerEl.createDiv({
-						cls: 'sentilis-row-title-wrapper',
-					});
-
-				titleWrapper.createEl(
-					'strong',
-					{
-						text: item.name,
-					}
-				);
-
-				const chevron =
-					headerEl.createSpan({
-						cls: 'sentilis-row-chevron',
-					});
-
-				setIcon(
-					chevron,
-					'chevron-right'
-				);
-
-				const metaEl =
-					itemEl.createDiv({
-						cls: 'sentilis-list-meta',
-					});
-
-				metaEl.createSpan({
-					text: item.kind,
-
-					cls: 'sentilis-badge',
+				this.renderListRow(itemEl, {
+					title: item.name,
+					meta: [
+						item.kind,
+						item.createdAt
+							? new Date(
+									item.createdAt
+								).toLocaleDateString()
+							: null,
+					],
 				});
-
-				if (
-					item.createdAt
-				) {
-					const date =
-						new Date(
-							item.createdAt
-						).toLocaleDateString();
-
-					metaEl.createSpan({
-						text: date,
-
-						cls: 'sentilis-list-date',
-					});
-				}
 			});
 		}
+	}
+
+	private renderListRow(
+		itemEl: HTMLElement,
+		{
+			title,
+			meta,
+		}: {
+			title: string;
+			meta: Array<string | null | undefined>;
+		}
+	) {
+		const headerEl = itemEl.createDiv({
+			cls: 'sentilis-list-header',
+		});
+
+		const titleWrapper =
+			headerEl.createDiv({
+				cls: 'sentilis-row-title-wrapper',
+			});
+
+		titleWrapper.createEl('strong', {
+			text: title,
+		});
+
+		const chevron =
+			headerEl.createSpan({
+				cls: 'sentilis-row-chevron',
+			});
+
+		setIcon(chevron, 'chevron-right');
+
+		const filtered = meta.filter(
+			(v): v is string => Boolean(v)
+		);
+
+		if (filtered.length === 0) {
+			return;
+		}
+
+		const metaEl = itemEl.createDiv({
+			cls: 'sentilis-list-meta',
+		});
+
+		filtered.forEach((value, index) => {
+			if (index > 0) {
+				metaEl.createSpan({
+					text: '·',
+					cls: 'sentilis-list-meta-sep',
+				});
+			}
+
+			metaEl.createSpan({
+				text: value,
+				cls: 'sentilis-list-meta-item',
+			});
+		});
 	}
 }

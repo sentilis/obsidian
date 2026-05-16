@@ -92,7 +92,7 @@ export default class SentilisPlugin extends Plugin {
 
 				menu.addItem((item) => {
 					item.setTitle(`Sentilis (${profileLabel})`).setIcon(
-						"globe",
+						"layers",
 					);
 
 					const submenu = (item as any).setSubmenu();
@@ -100,7 +100,7 @@ export default class SentilisPlugin extends Plugin {
 					submenu.addItem((subItem: any) => {
 						subItem
 							.setTitle(this.t("publish.press"))
-							.setIcon("upload")
+							.setIcon("megaphone")
 							.onClick(async () => {
 								if (
 									file instanceof TFile &&
@@ -129,8 +129,8 @@ export default class SentilisPlugin extends Plugin {
 
 					submenu.addItem((subItem: any) => {
 						subItem
-							.setTitle("Publish to Market")
-							.setIcon("package")
+							.setTitle(this.t("publish.market"))
+							.setIcon("shopping-bag")
 							.onClick(async () => {
 								if (
 									file instanceof TFile &&
