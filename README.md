@@ -1,166 +1,78 @@
-# Sentilis Obsidian Plugin
+<p align="center">
+  <h1 align="center">@sentilis/obsidian</h1>
+</p>
 
-Plugin to integrate Obsidian with Sentilis and publish Press and Market content directly from Markdown files.
+<p align="center">
+  <strong>The official Obsidian plugin for the Sentilis platform.</strong>
+</p>
 
----
+<p align="center">
+<a href="./LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
+<a href="https://obsidian.md" target="_blank"><img src="https://img.shields.io/badge/obsidian-1.5.0%2B-7c3aed.svg" alt="Obsidian Version" /></a>
+<a href="https://www.npmjs.com/package/@sentilis/core" target="_blank"><img src="https://img.shields.io/npm/v/@sentilis/core.svg?label=%40sentilis%2Fcore" alt="Core Version" /></a>
+</p>
 
-# Features
+## Description
 
-## Press
-- Publish Markdown files to Sentilis Press
-- Image/assets support
-- View Details
-- Delete Press
-- Open Link
+The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your vault. Built on top of [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core), it lets you author, validate, and publish **Press** articles and **Market** products from your Markdown notes — without ever leaving Obsidian.
 
-## Market
-- Publish products to Sentilis Market
-- Image/assets support
-- View Details
-- Delete Product
-- Open Link
+## Features
 
-## General
-- Multi-profile support
-- Custom sidebar
-- Context menu actions
-- i18n (English / Spanish)
-- Network detection
-- Auto refresh
-- Obsidian markdown support (`![[image.png]]`)
+- **Press publishing** — push Markdown notes to Sentilis Press with full asset support.
+- **Market publishing** — turn a note into a Sentilis Market product in one click.
+- **Sidebar view** — browse and manage your published Press and Market entries from a dedicated panel.
+- **Context menu actions** — publish, view details, open online, or delete content directly from the file explorer.
+- **Multi-profile support** — switch between Sentilis accounts on the fly.
+- **Obsidian-native assets** — `![[image.png]]` embeds, standard Markdown images, frontmatter covers, and file attachments are all resolved automatically.
+- **i18n** — English and Spanish out of the box.
+- **Network detection & auto-refresh** — the sidebar stays in sync with your account.
 
----
+## Installation
 
-# Requirements
+### From source (current)
 
-- Node.js 20+
-- npm
-- Obsidian
-- Sentilis account
+1.  Clone the repository into your vault's plugins folder:
+    ```bash
+    $ git clone <REPO_URL> <VAULT>/.obsidian/plugins/sentilis-obsidian
+    ```
+2.  Install dependencies and build:
+    ```bash
+    $ cd <VAULT>/.obsidian/plugins/sentilis-obsidian
+    $ npm install
+    $ npm run build
+    ```
+3.  In Obsidian, open **Settings → Community Plugins**, reload the plugin list, and enable **Sentilis**.
 
----
+*Tip: for development, symlink the repository into your vault instead of cloning — see [Development](#development).*
 
-# Installation
+## Getting Started
 
-## 1. Clone repository
+### 1. Configure a Profile
 
-```bash
-git clone <REPO_URL>
-```
+Open **Settings → Sentilis** and add a profile with:
 
----
+- **Username** — your Sentilis handle.
+- **API Token** — generated from your Sentilis account.
 
-## 2. Install dependencies
-
-```bash
-npm install
-```
-
----
-
-## 3. Start development mode
-
-```bash
-npm run dev
-```
-
-This will automatically generate:
+You can register multiple profiles and switch between them using the command palette:
 
 ```text
-main.js
+Sentilis: Change profile
 ```
 
----
+### 2. Open the Sidebar
 
-# Install plugin inside Obsidian
-
-Copy the project into:
+Run the command:
 
 ```text
-<VAULT>/.obsidian/plugins/sentilis-plugin/
+Sentilis: Open sidebar
 ```
 
-Example:
+The sidebar lists your Press entries and Market products for the active profile, with quick actions to view details, open the online URL, or delete an item.
 
-```text
-/ObsidianVaults/MyVault/.obsidian/plugins/sentilis-plugin/
-```
+### 3. Publish Press
 
----
-
-# Optional: Use a Symlink (Recommended for Development)
-
-Instead of copying files manually every time, you can create a symbolic link between your development repository and the Obsidian plugins folder.
-
-## Linux / macOS
-
-```bash
-ln -s /path/to/project /path/to/vault/.obsidian/plugins/sentilis-plugin
-```
-
-Example:
-
-```bash
-ln -s /var/www/sentilis-plugin /ObsidianVaults/MyVault/.obsidian/plugins/sentilis-plugin
-```
-
----
-
-## Windows (PowerShell as Administrator)
-
-```powershell
-New-Item -ItemType SymbolicLink `
-  -Path "C:\Vault\.obsidian\plugins\sentilis-plugin" `
-  -Target "C:\Projects\sentilis-plugin"
-```
-
-This allows live development directly from your repository.
-
----
-
-# Required Files
-
-Make sure these files exist:
-
-```text
-main.js
-manifest.json
-styles.css
-```
-
----
-
-# Enable Plugin
-
-1. Open Obsidian
-2. Go to Settings
-3. Community Plugins
-4. Enable Community Plugins
-5. Search for "Sentilis Plugin"
-6. Enable it
-
----
-
-# Configure Profile
-
-Open:
-
-```text
-Settings → Sentilis Plugin
-```
-
-Add:
-
-- Username
-- API Token
-
-Select an active profile.
-
----
-
-# Publishing Press
-
-Create a markdown file:
+Create a Markdown file with Sentilis frontmatter. Read [What is a Press?](https://about.sentilis.me/press?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=press-section) for the full schema.
 
 ```md
 ---
@@ -176,17 +88,15 @@ image: cover.png
 ![[cover.png]]
 ```
 
-Right click the file:
+Right-click the file in the explorer and choose:
 
 ```text
 Sentilis → Publish to Press
 ```
 
----
+### 4. Publish Market
 
-# Publishing Market
-
-Create a markdown file:
+Create a Markdown file describing your product. Read [What is Market?](https://about.sentilis.me/market?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=market-section) for the full schema.
 
 ```md
 ---
@@ -205,76 +115,88 @@ image: cover.png
 ![[cover.png]]
 ```
 
-Right click the file:
+Right-click the file and choose:
 
 ```text
 Sentilis → Publish to Market
 ```
 
----
+## Assets
 
-# Assets Support
-
-The plugin supports:
-
-- Markdown images
-- Obsidian embeds
-- Frontmatter image
-- Attachments
-
-Examples:
+The plugin resolves assets against your vault so you can reference files exactly the way Obsidian does:
 
 ```md
-![[image.png]]
+![[image.png]]            <!-- Obsidian embed -->
+![](Assets/image.png)     <!-- Standard Markdown -->
 ```
 
-```md
-![](Assets/image.png)
-```
+Supported asset sources:
 
-Images must exist inside the Obsidian Vault.
+- Obsidian embeds (`![[file]]`)
+- Standard Markdown images
+- Frontmatter cover image
+- Attachments (PDF, ZIP, etc.)
 
----
+All referenced files must exist inside the active vault.
 
-# Development Notes
+## Development
 
-## Rebuild Plugin
+### Requirements
 
-Whenever you make changes:
+- Node.js 20+
+- npm
+- Obsidian 1.5.0+
+- A Sentilis account
+
+### Symlink the plugin (recommended)
+
+Develop directly from the repository by symlinking it into your vault:
+
+**Linux / macOS**
 
 ```bash
-npm run dev
+$ ln -s /path/to/sentilis.obsidian /path/to/vault/.obsidian/plugins/sentilis-obsidian
 ```
 
----
+**Windows (PowerShell as Administrator)**
 
-## Reload Plugin
-
-Inside Obsidian:
-
-```text
-Settings → Community Plugins
+```powershell
+New-Item -ItemType SymbolicLink `
+  -Path "C:\Vault\.obsidian\plugins\sentilis-obsidian" `
+  -Target "C:\Projects\sentilis.obsidian"
 ```
 
-Disable and enable the plugin again.
+### Scripts
 
-Or:
+| Script          | Description                                         |
+| --------------- | --------------------------------------------------- |
+| `npm run dev`   | Build in watch mode — regenerates `main.js` on save. |
+| `npm run build` | Type-check and produce a production build.          |
+| `npm run lint`  | Run ESLint with the Obsidian plugin rules.          |
 
-```text
-CTRL + P → Reload app without saving
-```
+After rebuilding, reload the plugin in Obsidian (disable/enable it, or run `Ctrl+P → Reload app without saving`).
 
----
-
-# Tech Stack
+### Tech Stack
 
 - TypeScript
-- Obsidian API
-- Sentilis SDK
+- Obsidian Plugin API
+- [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core) SDK
 - esbuild
 
----
+## Related Packages
 
-# License
+- **[@sentilis/core](https://www.npmjs.com/package/@sentilis/core)** — TypeScript SDK for parsing Sentilis-flavored Markdown and talking to the platform.
+- **[@sentilis/cli](https://www.npmjs.com/package/@sentilis/cli)** — Command-line companion for terminal-based workflows.
 
-Private / Internal Project
+## Stay in touch
+
+- Website — [https://about.sentilis.me](https://about.sentilis.me?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=stay-in-touch-website)
+- X — [https://x.com/SentilisMe](https://x.com/SentilisMe)
+
+## Support
+
+For issues and feature requests, please use the GitHub Issues page.
+
+## License
+
+Sentilis Obsidian Plugin is [MIT licensed](./LICENSE).
