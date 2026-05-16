@@ -218,11 +218,16 @@ export class SentilisSidebarView extends ItemView {
 		}
 
 		const loadingEl =
-			contentEl.createEl('p', {
-				text: this.plugin.t(
-					'sidebar.loadingMsg'
-				),
+			contentEl.createDiv({
+				cls: 'sentilis-loading',
 			});
+
+		setIcon(
+			loadingEl.createSpan({
+				cls: 'sentilis-loading-spinner',
+			}),
+			'loader-2'
+		);
 
 		const press =
 			await this.plugin.contentService.getRecentPress();
@@ -240,11 +245,13 @@ export class SentilisSidebarView extends ItemView {
 			this.activeTab === 'press'
 		) {
 			if (press.length === 0) {
-				contentEl.createEl('p', {
-					text: this.plugin.t(
+				this.renderEmpty(
+					contentEl,
+					'megaphone',
+					this.plugin.t(
 						'sidebar.noPress'
-					),
-				});
+					)
+				);
 			}
 
 			press.forEach((item) => {
@@ -377,11 +384,13 @@ export class SentilisSidebarView extends ItemView {
 			if (
 				products.length === 0
 			) {
-				contentEl.createEl('p', {
-					text: this.plugin.t(
+				this.renderEmpty(
+					contentEl,
+					'shopping-bag',
+					this.plugin.t(
 						'sidebar.noProducts'
-					),
-				});
+					)
+				);
 			}
 
 			products.forEach((item) => {
@@ -508,6 +517,28 @@ export class SentilisSidebarView extends ItemView {
 				});
 			});
 		}
+	}
+
+	private renderEmpty(
+		parent: HTMLElement,
+		icon: string,
+		message: string
+	) {
+		const wrap = parent.createDiv({
+			cls: 'sentilis-empty',
+		});
+
+		setIcon(
+			wrap.createSpan({
+				cls: 'sentilis-empty-icon',
+			}),
+			icon
+		);
+
+		wrap.createSpan({
+			text: message,
+			cls: 'sentilis-empty-text',
+		});
 	}
 
 	private renderListRow(

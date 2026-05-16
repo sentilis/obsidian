@@ -131,7 +131,7 @@ export default class SentilisPlugin extends Plugin {
 					submenu.addItem((subItem: any) => {
 						subItem
 							.setTitle(this.t("dryRun.pressLabel"))
-							.setIcon("clipboard-check")
+							.setIcon("flask-conical")
 							.onClick(async () => {
 								if (
 									!(file instanceof TFile) &&
@@ -182,7 +182,7 @@ export default class SentilisPlugin extends Plugin {
 					submenu.addItem((subItem: any) => {
 						subItem
 							.setTitle(this.t("dryRun.marketLabel"))
-							.setIcon("clipboard-check")
+							.setIcon("flask-conical")
 							.onClick(async () => {
 								if (
 									!(file instanceof TFile) &&

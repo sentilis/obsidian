@@ -110,20 +110,18 @@ export const translations = {
 		},
 
 		sidebar: {
-			noPress:
-				'No press found',
+			noPress: 'No press yet',
 
-			noProducts:
-				'No products found',
+			noProducts: 'No products yet',
 
 			recentPress:
 				'Recent Press',
 
 			recentMarket:
 				'Recent Market',
-				
+
 			offline: 'Offline',
-			loadingMsg: 'Loading Content...',
+			loadingMsg: 'Loading…',
 			
 			rowElement: {
 				showDetails: 'Show Details',
@@ -309,22 +307,20 @@ export const translations = {
 
 		sidebar: {
 			open: 'Abrir Barra Lateral',
-			
-			noPress:
-				'No se encontraron publicaciones',
 
-			noProducts:
-				'No se encontraron productos',
+			noPress: 'Sin publicaciones',
+
+			noProducts: 'Sin productos',
 
 			recentPress:
 				'Publicaciones recientes',
 
 			recentMarket:
 				'Productos recientes',
-				
+
 			offline: 'Sin conexión',
 
-			loadingMsg: 'Cargando contenido...',
+			loadingMsg: 'Cargando…',
 			
 			rowElement: {
 				showDetails: 'Mostrar Detalles',
