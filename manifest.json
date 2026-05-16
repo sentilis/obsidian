@@ -3,8 +3,8 @@
 	"name": "Sentilis",
 	"version": "0.0.1",
 	"minAppVersion": "1.5.0",
-	"description": "The official Obsidian plugin for the Sentilis platform",
+	"description": "Publish content from your vault to the Sentilis platform.",
 	"author": "Sentilis",
-	"authorUrl": "https://about.sentilis.me/?utm_source=obsidian&utm_medium=app&utm_campaign=plugin_manifest",
+	"authorUrl": "https://about.sentilis.me",
 	"isDesktopOnly": false
 }
