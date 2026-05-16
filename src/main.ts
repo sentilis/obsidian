@@ -1,20 +1,17 @@
 import { Menu, MenuItem, Notice, Plugin, TFile, TFolder } from "obsidian";
 
-import { DEFAULT_SETTINGS } from "./settings/settings";
-import { SentilisPluginSettings } from "./settings/types";
-import { SentilisSettingTab } from "./settings/settings-tab";
-import { ProfileService } from "./services/profile-service";
-import { ApiClient } from "./api/api-client";
-import { AuthService } from "./services/auth-service";
-import { ProfileSwitcherModal } from "./modals/profile-switcher-modal";
-import { DryRunModal } from "./modals/dry-run-modal";
-import { SENTILIS_VIEW_TYPE } from "./constants/views";
-import { SentilisSidebarView } from "./views/sidebar-view";
-import { ContentService } from "./services/content-service";
-import { PublishService } from "./services/publish-service";
-import { I18nService } from "./services/i18n-service";
-import { NetworkService } from "./services/network-service";
-import { AssetService } from "./services/asset-service";
+import { DEFAULT_SETTINGS, SentilisPluginSettings } from "./config";
+import { SentilisSettingTab } from "./settings-tab";
+import { ProfileService } from "./auth/profile";
+import { AuthService } from "./auth/service";
+import { ProfileSwitcherModal } from "./auth/switcher-modal";
+import { PublishModal } from "./ui/publish-modal";
+import { SENTILIS_VIEW_TYPE } from "./events";
+import { SentilisSidebarView } from "./sidebar";
+import { ContentService } from "./content";
+import { PublishService } from "./publish";
+import { I18nService } from "./i18n";
+import { NetworkService } from "./network";
 
 type MenuItemWithSubmenu = MenuItem & {
 	setSubmenu(): Menu;
@@ -23,25 +20,21 @@ type MenuItemWithSubmenu = MenuItem & {
 export default class SentilisPlugin extends Plugin {
 	settings: SentilisPluginSettings;
 	profileService: ProfileService;
-	apiClient: ApiClient;
 	authService: AuthService;
 	contentService: ContentService;
 	publishService: PublishService;
 	i18nService: I18nService;
 	networkService: NetworkService;
-	assetService: AssetService;
 
 	async onload() {
 		await this.loadSettings();
 
 		this.profileService = new ProfileService(this);
-		this.apiClient = new ApiClient();
-		this.authService = new AuthService(this);
+		this.authService = new AuthService();
 		this.contentService = new ContentService(this);
 		this.publishService = new PublishService(this);
 		this.i18nService = new I18nService(this);
 		this.networkService = new NetworkService(this);
-		this.assetService = new AssetService(this);
 
 		//Settings
 		this.addSettingTab(new SentilisSettingTab(this.app, this));
@@ -98,104 +91,42 @@ export default class SentilisPlugin extends Plugin {
 
 					const submenu = (item as MenuItemWithSubmenu).setSubmenu();
 
+					const openPublish = (kind: "press" | "market" | "bio") => {
+						if (
+							!(file instanceof TFile && file.extension === "md") &&
+							!(file instanceof TFolder)
+						) {
+							new Notice(
+								"Only Markdown files or folders can be published",
+							);
+							return;
+						}
+
+						new PublishModal(this.app, this, {
+							kind,
+							target: file,
+						}).open();
+					};
+
 					submenu.addItem((subItem) => {
 						subItem
 							.setTitle(this.t("publish.press"))
 							.setIcon("megaphone")
-							.onClick(async () => {
-								if (
-									file instanceof TFile &&
-									file.extension === "md"
-								) {
-									await this.publishService.publishPressFile(
-										file,
-									);
-
-									return;
-								}
-
-								if (file instanceof TFolder) {
-									await this.publishService.publishPressFolder(
-										file,
-									);
-
-									return;
-								}
-
-								new Notice(
-									"Only Markdown files or folders can be published",
-								);
-							});
+							.onClick(() => openPublish("press"));
 					});
-
-					submenu.addItem((subItem) => {
-						subItem
-							.setTitle(this.t("dryRun.pressLabel"))
-							.setIcon("flask-conical")
-							.onClick(async () => {
-								if (
-									!(file instanceof TFile) &&
-									!(file instanceof TFolder)
-								) {
-									return;
-								}
-
-								const report =
-									await this.publishService.dryRunPress(file);
-
-								new DryRunModal(this.app, this, report).open();
-							});
-					});
-
-					submenu.addSeparator();
 
 					submenu.addItem((subItem) => {
 						subItem
 							.setTitle(this.t("publish.market"))
 							.setIcon("shopping-bag")
-							.onClick(async () => {
-								if (
-									file instanceof TFile &&
-									file.extension === "md"
-								) {
-									await this.publishService.publishMarketFile(
-										file,
-									);
-
-									return;
-								}
-
-								if (file instanceof TFolder) {
-									await this.publishService.publishMarketFolder(
-										file,
-									);
-
-									return;
-								}
-
-								new Notice(
-									"Only Markdown files or folders can be published",
-								);
-							});
+							.onClick(() => openPublish("market"));
 					});
 
 					submenu.addItem((subItem) => {
 						subItem
-							.setTitle(this.t("dryRun.marketLabel"))
-							.setIcon("flask-conical")
-							.onClick(async () => {
-								if (
-									!(file instanceof TFile) &&
-									!(file instanceof TFolder)
-								) {
-									return;
-								}
-
-								const report =
-									await this.publishService.dryRunMarket(file);
-
-								new DryRunModal(this.app, this, report).open();
-							});
+							.setTitle(this.t("publish.bio"))
+							.setIcon("user")
+							.onClick(() => openPublish("bio"));
 					});
 				});
 			}),

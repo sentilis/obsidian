@@ -1,1 +1,0 @@
-export const SENTILIS_VIEW_TYPE = 'sentilis-sidebar-view';
