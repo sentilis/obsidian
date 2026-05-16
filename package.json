@@ -1,7 +1,7 @@
 {
 	"name": "sentilis-obsidian",
 	"version": "0.0.1",
-	"description": "The official Obsidian plugin for the Sentilis platform — publish content directly from your vault.",
+	"description": "The official Obsidian plugin for the Sentilis platform.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {

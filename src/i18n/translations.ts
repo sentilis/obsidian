@@ -5,16 +5,18 @@ export const translations = {
 			confirm: 'Confirm',
 			confirmDeleteTitle:
 				'Confirm deletion',
+			copyLink: 'Copy link',
+			linkCopied: 'Link copied',
 		},
 
 		settings: {
-			openSidebar: 'Open Sidebar',
+			openSidebar: 'Open sidebar',
 
-			changeProfile: 'Change Active Profile',
+			changeProfile: 'Change profile',
 
-			active_user: 'Active User',
+			active_user: 'Active user',
 
-			title: 'Sentilis Settings',
+			title: 'Sentilis settings',
 
 			language: 'Language',
 
@@ -24,19 +26,19 @@ export const translations = {
 			profiles: 'Profiles',
 
 			defaultProfile:
-				'Default Profile',
+				'Default profile',
 
 			defaultProfileDesc:
-				'Select default active profile',
-				
+				'Select the default active profile',
+
 			active: 'Active',
-			
-			deleteProfile: 'Delete Profile',
+
+			deleteProfile: 'Delete profile',
 		},
 
 		addProfile: {
-			title: 'Add Sentilis Profile',
-			accessToken: 'Access Token',
+			title: 'Add Sentilis profile',
+			accessToken: 'Access token',
 			save: 'Save',
 			completeFields: 'Please complete all fields',
 			tokenAlreadyExists:
@@ -45,8 +47,9 @@ export const translations = {
 				'Invalid Sentilis token',
 			profileAdded:
 				'Profile added successfully',
-			addNewToken: 'Add New Token',
-			addNewTokenDesc: 'Add a new Sentilis profile',
+			addNewToken: 'Add profile',
+			addNewTokenDesc:
+				'Create a new Sentilis profile',
 		},
 
 		publish: {
@@ -186,16 +189,18 @@ export const translations = {
 			confirm: 'Confirmar',
 			confirmDeleteTitle:
 				'Confirmar eliminación',
+			copyLink: 'Copiar enlace',
+			linkCopied: 'Enlace copiado',
 		},
 
 		settings: {
 			title: 'Configuración de Sentilis',
 
-			changeProfile: 'Cambiar Perfil Activo',
+			changeProfile: 'Cambiar perfil',
 
-			active_user: 'Usuario Activo',
-			
-			openSidebar: 'Abrir Barra Lateral',
+			active_user: 'Usuario activo',
+
+			openSidebar: 'Abrir barra lateral',
 
 			language: 'Idioma',
 
@@ -205,14 +210,14 @@ export const translations = {
 			profiles: 'Perfiles',
 
 			defaultProfile:
-				'Perfil Predeterminado',
+				'Perfil predeterminado',
 
 			defaultProfileDesc:
 				'Selecciona el perfil activo por defecto',
-				
+
 			active: 'Activo',
-			
-			deleteProfile: 'Eliminar Perfil',
+
+			deleteProfile: 'Eliminar perfil',
 		},
 
 		addProfile: {
@@ -227,8 +232,9 @@ export const translations = {
 				'Token de Sentilis inválido',
 			profileAdded:
 				'Perfil agregado correctamente',
-			addNewToken: 'Agregar Nuevo Token',
-			addNewTokenDesc: 'Agregar un nuevo perfil de Sentilis',
+			addNewToken: 'Agregar perfil',
+			addNewTokenDesc:
+				'Crea un nuevo perfil de Sentilis',
 		},
 
 		publish: {

@@ -1,6 +1,7 @@
 import {
 	App,
 	Notice,
+	setIcon,
 	SuggestModal,
 } from 'obsidian';
 
@@ -20,7 +21,9 @@ export class ProfileSwitcherModal extends SuggestModal<SentilisProfile> {
 		this.plugin = plugin;
 
 		this.setPlaceholder(
-			'Select active Sentilis profile'
+			this.plugin.t(
+				'settings.changeProfile'
+			)
 		);
 	}
 
@@ -41,22 +44,38 @@ export class ProfileSwitcherModal extends SuggestModal<SentilisProfile> {
 		profile: SentilisProfile,
 		el: HTMLElement
 	) {
-		el.createEl('div', {
-			text: profile.username,
-		});
+		el.addClass(
+			'sentilis-profile-suggestion'
+		);
 
-		if (
+		const isActive =
 			profile.id ===
 			this.plugin.settings
-				.defaultProfileId
-		) {
-			el.createEl('small', {
-				text: this.plugin.t(
-					'settings.active_user'
-				),
-				cls: 'sentilis-active-profile-badge',
+				.defaultProfileId;
+
+		if (isActive) {
+			const iconEl = el.createSpan({
+				cls: 'sentilis-active-icon',
+				attr: {
+					'aria-label':
+						this.plugin.t(
+							'settings.active'
+						),
+					title: this.plugin.t(
+						'settings.active'
+					),
+				},
 			});
+
+			setIcon(
+				iconEl,
+				'check-circle-2'
+			);
 		}
+
+		el.createSpan({
+			text: profile.username,
+		});
 	}
 
 	async onChooseSuggestion(
@@ -71,7 +90,7 @@ export class ProfileSwitcherModal extends SuggestModal<SentilisProfile> {
 		);
 
 		new Notice(
-			`Active profile changed to ${profile.username}`
+			`Active profile: ${profile.username}`
 		);
 	}
 }

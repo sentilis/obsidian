@@ -15,6 +15,11 @@ import { ProductDetailModal } from '../modals/product-detail-modal';
 
 import { ConfirmModal } from '../modals/confirm-modal';
 
+import {
+	statusIconName,
+	statusIconClass,
+} from '../utils/status-icon';
+
 import { SENTILIS_EVENTS } from '../constants/events';
 
 export class SentilisSidebarView extends ItemView {
@@ -316,8 +321,6 @@ export class SentilisSidebarView extends ItemView {
 							}
 						);
 
-						menu.addSeparator();
-
 						menu.addItem(
 							(itemMenu) => {
 								itemMenu
@@ -355,8 +358,8 @@ export class SentilisSidebarView extends ItemView {
 
 				this.renderListRow(itemEl, {
 					title: item.name,
+					status: item.status,
 					meta: [
-						item.status,
 						item.visibility,
 						item.createdAt
 							? new Date(
@@ -455,8 +458,6 @@ export class SentilisSidebarView extends ItemView {
 							}
 						);
 
-						menu.addSeparator();
-
 						menu.addItem(
 							(itemMenu) => {
 								itemMenu
@@ -494,8 +495,10 @@ export class SentilisSidebarView extends ItemView {
 
 				this.renderListRow(itemEl, {
 					title: item.name,
+					status: item.status,
 					meta: [
 						item.kind,
+						item.visibility,
 						item.createdAt
 							? new Date(
 									item.createdAt
@@ -511,15 +514,34 @@ export class SentilisSidebarView extends ItemView {
 		itemEl: HTMLElement,
 		{
 			title,
+			status,
 			meta,
 		}: {
 			title: string;
+			status?: string;
 			meta: Array<string | null | undefined>;
 		}
 	) {
 		const headerEl = itemEl.createDiv({
 			cls: 'sentilis-list-header',
 		});
+
+		if (status !== undefined) {
+			const statusEl =
+				headerEl.createSpan({
+					cls: statusIconClass(status),
+					attr: {
+						'aria-label':
+							status || 'unknown',
+						title: status || '',
+					},
+				});
+
+			setIcon(
+				statusEl,
+				statusIconName(status)
+			);
+		}
 
 		const titleWrapper =
 			headerEl.createDiv({

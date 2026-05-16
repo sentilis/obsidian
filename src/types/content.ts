@@ -14,6 +14,8 @@ export interface ProductItem {
 	name: string;
 	kind: string;
 	url: string;
+	status?: string;
+	visibility?: string;
 	createdAt?: string;
 }
 
@@ -32,5 +34,6 @@ export interface PressDetailItem {
 		name: string;
 		status?: string;
 		visibility?: string;
+		url?: string;
 	}[];
 }

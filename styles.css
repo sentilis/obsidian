@@ -1,86 +1,23 @@
-.sentilis-active-badge {
+.sentilis-active-icon {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
 
-	margin-left: 8px;
-	padding: 4px 10px;
+	margin-right: 6px;
 
-	border-radius: 999px;
+	color: #3ddc84;
 
-	background: rgba(
-		80,
-		255,
-		120,
-		0.08
-	);
-
-	border: 1px solid rgba(
-		80,
-		255,
-		120,
-		0.18
-	);
-
-	backdrop-filter: blur(10px);
-
-	color: #7dff9b;
-
-	font-size: 10px;
-	font-weight: 700;
-
-	letter-spacing: 0.12em;
-
-	text-transform: uppercase;
-
-	box-shadow:
-		0 0 12px rgba(
-			80,
-			255,
-			120,
-			0.12
-		),
-		inset 0 0 8px rgba(
-			80,
-			255,
-			120,
-			0.04
-		);
+	vertical-align: middle;
 }
 
-.sentilis-active-badge::before {
-	content: '';
-
-	width: 7px;
-	height: 7px;
-
-	border-radius: 50%;
-
-	background: #57ff84;
-
-	box-shadow:
-		0 0 10px #57ff84,
-		0 0 20px rgba(
-			87,
-			255,
-			132,
-			0.7
-		);
+.sentilis-active-icon svg {
+	width: 14px;
+	height: 14px;
 }
 
-.sentilis-active-profile-badge {
-	color: rgb(255 126 103);
-
-	font-size: 11px;
-	font-weight: 700;
-
-	text-transform: uppercase;
-
-	letter-spacing: 0.5px;
-
-	margin-top: 4px;
-
-	display: inline-block;
+.sentilis-profile-suggestion {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .sentilis-offline-indicator {
@@ -116,59 +53,54 @@
 
 .sentilis-tabs {
 	display: flex;
-	gap: 12px;
+	gap: 20px;
 
-	margin-bottom: 24px;
+	margin-bottom: 16px;
+
+	border-bottom: 1px solid
+		var(--background-modifier-border);
 }
 
 .sentilis-tab {
-	padding: 10px 18px;
+	position: relative;
 
-	border-radius: 14px;
+	padding: 8px 0;
 
 	cursor: pointer;
 
-	background: rgba(
-		255,
-		255,
-		255,
-		0.03
-	);
+	background: transparent;
+	border: none;
 
-	border: 1px solid
-		rgba(255, 255, 255, 0.05);
+	color: var(--text-muted);
 
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 500;
 
-	transition: all 0.2s ease;
+	transition: color 0.15s ease;
 }
 
 .sentilis-tab:hover {
-	background: rgba(
-		255,
-		255,
-		255,
-		0.05
-	);
+	color: var(--text-normal);
 }
 
 .sentilis-tab.is-active {
-	background: rgba(
-		139,
-		92,
-		246,
-		0.15
-	);
+	color: var(--text-normal);
 
-	border-color: rgba(
-		139,
-		92,
-		246,
-		0.3
-	);
+	font-weight: 600;
+}
 
-	color: #a78bfa;
+.sentilis-tab.is-active::after {
+	content: '';
+
+	position: absolute;
+
+	left: 0;
+	right: 0;
+	bottom: -1px;
+
+	height: 2px;
+
+	background: var(--text-normal);
 }
 
 /* -------------------------------- */
@@ -201,7 +133,18 @@
 .sentilis-list-header {
 	display: flex;
 	align-items: flex-start;
-	gap: 12px;
+	gap: 10px;
+}
+
+.sentilis-list-header
+	.sentilis-status-icon {
+	margin-top: 2px;
+}
+
+.sentilis-list-header
+	.sentilis-status-icon svg {
+	width: 16px;
+	height: 16px;
 }
 
 .sentilis-row-title-wrapper {
@@ -262,33 +205,139 @@
 /* -------------------------------- */
 
 .sentilis-large-modal {
-	width: 1050px !important;
+	width: 640px !important;
 
 	max-width: 90vw;
 }
 
 .sentilis-premium-modal {
-	padding: 12px;
+	padding: 8px;
 }
 
 .sentilis-premium-header {
 	display: flex;
-	align-items: center;
-	gap: 18px;
+	align-items: flex-start;
+	gap: 12px;
 
-	margin-bottom: 28px;
+	margin-bottom: 20px;
 }
 
-.sentilis-premium-icon {
-	width: 56px;
-	height: 56px;
+.sentilis-premium-title {
+	margin: 0;
 
-	border-radius: 16px;
+	font-size: 22px;
+	font-weight: 600;
 
-	display: flex;
+	line-height: 1.3;
+
+	flex: 1;
+
+	min-width: 0;
+}
+
+.sentilis-inline-link {
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 
+	margin-left: 8px;
+	padding: 0;
+
+	background: transparent;
+	border: none;
+
+	color: var(--text-muted);
+
+	text-decoration: none;
+
+	vertical-align: middle;
+
+	cursor: pointer;
+
+	box-shadow: none;
+
+	transition: color 0.15s ease;
+}
+
+button.sentilis-inline-link {
+	height: auto;
+	line-height: 1;
+}
+
+.sentilis-inline-link:hover {
+	color: rgb(255 126 103);
+}
+
+.sentilis-inline-link svg {
+	width: 16px;
+	height: 16px;
+}
+
+.sentilis-status-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	margin-top: 4px;
+
+	color: var(--text-muted);
+}
+
+.sentilis-status-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.sentilis-premium-row
+	.sentilis-status-icon {
+	margin-top: 0;
+}
+
+.sentilis-premium-row
+	.sentilis-status-icon svg {
+	width: 16px;
+	height: 16px;
+}
+
+.sentilis-status-published {
+	color: #3ddc84;
+}
+
+.sentilis-status-draft {
+	color: var(--text-muted);
+}
+
+.sentilis-status-archived {
+	color: #ff9f43;
+}
+
+.sentilis-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 36px;
+	height: 36px;
+
+	border-radius: 10px;
+
+	background: rgba(255, 255, 255, 0.04);
+
+	border: 1px solid
+		rgba(255, 255, 255, 0.06);
+
+	color: var(--text-normal);
+
+	text-decoration: none;
+
+	transition: all 0.15s ease;
+
+	flex-shrink: 0;
+}
+
+.sentilis-icon-btn:hover {
 	background: rgba(
 		255,
 		126,
@@ -296,52 +345,46 @@
 		0.12
 	);
 
+	border-color: rgba(
+		255,
+		126,
+		103,
+		0.3
+	);
+
 	color: rgb(255 126 103);
 }
 
-.sentilis-premium-icon svg {
-	width: 28px;
-	height: 28px;
+.sentilis-icon-btn svg {
+	width: 16px;
+	height: 16px;
 }
 
-.sentilis-premium-title {
-	margin: 0;
+.sentilis-icon-btn-sm {
+	width: 28px;
+	height: 28px;
 
-	font-size: 34px;
-	font-weight: 700;
+	border-radius: 8px;
+}
 
-	line-height: 1.1;
+.sentilis-icon-btn-sm svg {
+	width: 14px;
+	height: 14px;
 }
 
 .sentilis-premium-meta {
 	display: flex;
 	flex-wrap: wrap;
 
-	gap: 28px;
+	gap: 20px;
 
-	margin-bottom: 26px;
+	margin-bottom: 20px;
 }
 
 .sentilis-meta-item {
-	position: relative;
-
-	padding-right: 28px;
-}
-
-.sentilis-meta-item:not(:last-child)::after {
-	content: '';
-
-	position: absolute;
-
-	right: 0;
-	top: 0;
-
-	width: 1px;
-	height: 100%;
-
-	background: var(
-		--background-modifier-border
-	);
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
 }
 
 .sentilis-meta-top {
@@ -349,21 +392,19 @@
 	align-items: center;
 	gap: 6px;
 
-	margin-bottom: 6px;
-
 	color: var(--text-muted);
 
-	font-size: 13px;
+	font-size: 12px;
 }
 
 .sentilis-meta-top svg {
-	width: 14px;
-	height: 14px;
+	width: 12px;
+	height: 12px;
 }
 
 .sentilis-meta-item strong {
-	font-size: 15px;
-	font-weight: 600;
+	font-size: 13px;
+	font-weight: 500;
 }
 
 .sentilis-status-success {
@@ -373,7 +414,7 @@
 .sentilis-premium-divider {
 	height: 1px;
 
-	margin: 28px 0;
+	margin: 16px 0;
 
 	background: var(
 		--background-modifier-border
@@ -431,13 +472,21 @@
 .sentilis-children-premium-header {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: 8px;
 
-	margin-bottom: 18px;
+	margin-bottom: 10px;
 }
 
 .sentilis-children-premium-header h2 {
 	margin: 0;
+
+	font-size: 14px;
+	font-weight: 600;
+
+	color: var(--text-muted);
+
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
 }
 
 .sentilis-children-badge {
@@ -445,10 +494,10 @@
 	align-items: center;
 	justify-content: center;
 
-	min-width: 32px;
-	height: 32px;
+	min-width: 20px;
+	height: 20px;
 
-	padding: 0 12px;
+	padding: 0 6px;
 
 	border-radius: 999px;
 
@@ -456,19 +505,15 @@
 		--background-secondary
 	);
 
-	font-size: 13px;
-	font-weight: 700;
+	color: var(--text-muted);
+
+	font-size: 11px;
+	font-weight: 600;
 }
 
 .sentilis-premium-list {
-	border-radius: 18px;
-
-	border: 1px solid
-		var(
-			--background-modifier-border
-		);
-
-	overflow: hidden;
+	border-radius: 0;
+	border: none;
 }
 
 .sentilis-premium-row {
@@ -476,14 +521,14 @@
 	align-items: center;
 	justify-content: space-between;
 
-	padding: 16px 18px;
+	padding: 10px 4px;
 
 	border-bottom: 1px solid
 		var(
 			--background-modifier-border
 		);
 
-	transition: all 0.2s ease;
+	transition: background 0.15s ease;
 }
 
 .sentilis-premium-row:last-child {

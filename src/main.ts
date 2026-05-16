@@ -127,6 +127,8 @@ export default class SentilisPlugin extends Plugin {
 							});
 					});
 
+					submenu.addSeparator();
+
 					submenu.addItem((subItem: any) => {
 						subItem
 							.setTitle(this.t("publish.market"))
