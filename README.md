@@ -33,11 +33,11 @@ The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your
 
 1.  Clone the repository into your vault's plugins folder:
     ```bash
-    $ git clone <REPO_URL> <VAULT>/.obsidian/plugins/sentilis-obsidian
+    $ git clone <REPO_URL> <VAULT>/.obsidian/plugins/sentilis
     ```
 2.  Install dependencies and build:
     ```bash
-    $ cd <VAULT>/.obsidian/plugins/sentilis-obsidian
+    $ cd <VAULT>/.obsidian/plugins/sentilis
     $ npm install
     $ npm run build
     ```
@@ -155,14 +155,14 @@ Develop directly from the repository by symlinking it into your vault:
 **Linux / macOS**
 
 ```bash
-$ ln -s /path/to/sentilis.obsidian /path/to/vault/.obsidian/plugins/sentilis-obsidian
+$ ln -s /path/to/sentilis.obsidian /path/to/vault/.obsidian/plugins/sentilis
 ```
 
 **Windows (PowerShell as Administrator)**
 
 ```powershell
 New-Item -ItemType SymbolicLink `
-  -Path "C:\Vault\.obsidian\plugins\sentilis-obsidian" `
+  -Path "C:\Vault\.obsidian\plugins\sentilis" `
   -Target "C:\Projects\sentilis.obsidian"
 ```
 

@@ -48,7 +48,7 @@ export default class SentilisPlugin extends Plugin {
 
 		//Commands
 		this.addCommand({
-			id: "sentilis-change-profile",
+			id: "change-profile",
 			name: this.t("settings.changeProfile"),
 			callback: () => {
 				if (this.settings.profiles.length === 0) {
@@ -62,7 +62,7 @@ export default class SentilisPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: "open-sentilis-sidebar",
+			id: "open-sidebar",
 			name: this.t("settings.openSidebar"),
 			callback: async () => {
 				const leaf = this.app.workspace.getRightLeaf(false);
