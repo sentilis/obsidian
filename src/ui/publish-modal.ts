@@ -1,4 +1,4 @@
-import { App, Modal, Notice, TFile, TFolder, setIcon } from 'obsidian';
+import { App, Modal, TFile, TFolder, setIcon } from 'obsidian';
 
 import { SentilisPluginInterface } from '../plugin';
 import { DryRunReport } from '../publish';

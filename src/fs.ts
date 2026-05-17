@@ -176,7 +176,7 @@ function posixRelative(from: string, to: string): string {
 	) {
 		i++;
 	}
-	const up = new Array(fromParts.length - i).fill('..');
+	const up: string[] = new Array<string>(fromParts.length - i).fill('..');
 	const down = toParts.slice(i);
 	const joined = [...up, ...down].join('/');
 	return joined === '' ? '.' : joined;

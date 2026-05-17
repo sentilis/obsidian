@@ -24,6 +24,10 @@ function formatCurrency(
 		return value;
 	}
 
+	if (typeof value === 'number') {
+		return String(value);
+	}
+
 	if (typeof value === 'object') {
 		const obj = value as Record<string, unknown>;
 
@@ -32,7 +36,7 @@ function formatCurrency(
 		return typeof code === 'string' ? code : '';
 	}
 
-	return String(value);
+	return '';
 }
 
 export class ProductDetailModal extends Modal {
