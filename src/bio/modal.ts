@@ -198,10 +198,6 @@ export class BioDetailModal extends Modal {
 			item.language || '-',
 		);
 
-		if (item.role) {
-			createMetaItem('briefcase', this.plugin.t('bioDetail.role'), item.role);
-		}
-
 		if (item.location) {
 			createMetaItem(
 				'map-pin',

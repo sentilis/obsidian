@@ -42,6 +42,17 @@ export const translations = {
 			active: 'Active',
 
 			deleteProfile: 'Delete profile',
+
+			account: 'Account',
+
+			yourAccount: 'Your account',
+
+			accountDesc:
+				"Sign in to your Sentilis account at id.sentilis.me. Your API token is available in your profile and can be added below.",
+
+			logIn: 'Log in',
+
+			signUp: 'Sign up',
 		},
 
 		addProfile: {
@@ -290,6 +301,17 @@ export const translations = {
 			active: 'Activo',
 
 			deleteProfile: 'Eliminar perfil',
+
+			account: 'Cuenta',
+
+			yourAccount: 'Tu cuenta',
+
+			accountDesc:
+				'Inicia sesión en tu cuenta de Sentilis en id.sentilis.me. Tu token de API está disponible en tu perfil y puedes agregarlo abajo.',
+
+			logIn: 'Iniciar sesión',
+
+			signUp: 'Crear cuenta',
 		},
 
 		addProfile: {

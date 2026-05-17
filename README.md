@@ -54,6 +54,8 @@ Open **Settings → Sentilis** and add a profile with:
 - **Username** — your Sentilis handle.
 - **API Token** — generated from your Sentilis account.
 
+> **Get your API token at [https://id.sentilis.me/login](https://id.sentilis.me/login?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=api-token)** — sign in with your Sentilis account, then copy the token from your profile.
+
 You can register multiple profiles and switch between them using the command palette:
 
 ```text

@@ -22,6 +22,12 @@ export class SentilisSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
+	private static readonly LOGIN_URL =
+		'https://id.sentilis.me/login?utm_source=obsidian&utm_medium=plugin&utm_campaign=settings&utm_content=login';
+
+	private static readonly SIGNUP_URL =
+		'https://id.sentilis.me/signup?utm_source=obsidian&utm_medium=plugin&utm_campaign=settings&utm_content=signup';
+
 	display(): void {
 		const { containerEl } = this;
 
@@ -29,31 +35,53 @@ export class SentilisSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName(
+				this.plugin.t('settings.account')
+			)
+			.setHeading();
+
+		new Setting(containerEl)
+			.setName(
 				this.plugin.t(
-					'addProfile.addNewToken'
+					'settings.yourAccount'
 				)
 			)
 			.setDesc(
 				this.plugin.t(
-					'addProfile.addNewTokenDesc'
+					'settings.accountDesc'
 				)
 			)
 			.addButton((button) => {
 				button
-					.setIcon('plus')
-					.setTooltip(
+					.setButtonText(
 						this.plugin.t(
-							'addProfile.addNewToken'
+							'settings.logIn'
 						)
 					)
+					.setTooltip(
+						SentilisSettingTab.LOGIN_URL
+					)
 					.onClick(() => {
-						new AddProfileModal(
-							this.app,
-							this.plugin,
-							() => {
-								this.display();
-							}
-						).open();
+						window.open(
+							SentilisSettingTab.LOGIN_URL,
+							'_blank'
+						);
+					});
+			})
+			.addButton((button) => {
+				button
+					.setButtonText(
+						this.plugin.t(
+							'settings.signUp'
+						)
+					)
+					.setTooltip(
+						SentilisSettingTab.SIGNUP_URL
+					)
+					.onClick(() => {
+						window.open(
+							SentilisSettingTab.SIGNUP_URL,
+							'_blank'
+						);
 					});
 			});
 
@@ -127,7 +155,25 @@ export class SentilisSettingTab extends PluginSettingTab {
 					'settings.profiles'
 				)
 			)
-			.setHeading();
+			.setHeading()
+			.addExtraButton((button) => {
+				button
+					.setIcon('plus')
+					.setTooltip(
+						this.plugin.t(
+							'addProfile.addNewToken'
+						)
+					)
+					.onClick(() => {
+						new AddProfileModal(
+							this.app,
+							this.plugin,
+							() => {
+								this.display();
+							}
+						).open();
+					});
+			});
 
 		this.plugin.settings.profiles.forEach(
 			(profile) => {
@@ -139,47 +185,60 @@ export class SentilisSettingTab extends PluginSettingTab {
 				const profileSetting =
 					new Setting(containerEl);
 
+				profileSetting.settingEl.addClass(
+					'sentilis-profile-setting'
+				);
+
 				const nameEl =
 					profileSetting.nameEl;
 
 				nameEl.empty();
 
-				if (isActive) {
-					const iconEl =
-						nameEl.createSpan({
-							cls: 'sentilis-active-icon',
-							attr: {
-								'aria-label':
-									this.plugin.t(
+				const iconEl =
+					nameEl.createSpan({
+						cls: isActive
+							? 'sentilis-profile-icon is-active'
+							: 'sentilis-profile-icon',
+						attr: {
+							'aria-label': isActive
+								? this.plugin.t(
 										'settings.active'
-									),
-								title: this.plugin.t(
-									'settings.active'
-								),
-							},
-						});
+									)
+								: '',
+							title: isActive
+								? this.plugin.t(
+										'settings.active'
+									)
+								: '',
+						},
+					});
 
-					setIcon(
-						iconEl,
-						'check-circle-2'
-					);
-				}
+				setIcon(
+					iconEl,
+					isActive
+						? 'check-circle-2'
+						: 'circle'
+				);
 
 				nameEl.createSpan({
 					text: profile.username,
+					cls: 'sentilis-profile-username',
 				});
 
-				const descEl =
-					profileSetting.descEl;
+				nameEl.createSpan({
+					text: ' - ',
+					cls: 'sentilis-profile-sep',
+				});
 
-				descEl.empty();
-
-				descEl.createSpan({
+				nameEl.createSpan({
 					text: `${profile.token.slice(
 						0,
 						8
 					)}…`,
+					cls: 'sentilis-profile-token',
 				});
+
+				profileSetting.descEl.remove();
 
 				profileSetting.addExtraButton(
 					(button) => {

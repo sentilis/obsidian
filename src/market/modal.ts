@@ -13,6 +13,28 @@ import {
 	statusIconName,
 } from '../ui/status-icon';
 
+function formatCurrency(
+	value: unknown
+): string {
+	if (value == null) {
+		return '';
+	}
+
+	if (typeof value === 'string') {
+		return value;
+	}
+
+	if (typeof value === 'object') {
+		const obj = value as Record<string, unknown>;
+
+		const code = obj.code ?? obj.symbol ?? obj.name;
+
+		return typeof code === 'string' ? code : '';
+	}
+
+	return String(value);
+}
+
 export class ProductDetailModal extends Modal {
 	plugin: SentilisPluginInterface;
 
@@ -228,7 +250,7 @@ export class ProductDetailModal extends Modal {
 			this.plugin.t(
 				'productModal.price'
 			),
-			`${product.price} ${product.currency ?? ''}`.trim()
+			`${product.price} ${formatCurrency(product.currency)}`.trim()
 		);
 
 		createMetaItem(
