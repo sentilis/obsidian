@@ -185,11 +185,6 @@ After rebuilding, reload the plugin in Obsidian (disable/enable it, or run `Ctrl
 - [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core) SDK
 - esbuild
 
-## Related Packages
-
-- **[@sentilis/core](https://www.npmjs.com/package/@sentilis/core)** — TypeScript SDK for parsing Sentilis-flavored Markdown and talking to the platform.
-- **[@sentilis/cli](https://www.npmjs.com/package/@sentilis/cli)** — Command-line companion for terminal-based workflows.
-
 ## Stay in touch
 
 - Website — [https://about.sentilis.me](https://about.sentilis.me?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=stay-in-touch-website)
