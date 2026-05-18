@@ -67,7 +67,6 @@ language: en
 role: Founder & CEO
 status: published
 visibility: public
-image: avatar.png
 ---
 
 # About me
@@ -91,7 +90,6 @@ name: My First Press
 slug: my-first-press
 status: published
 visibility: public
-image: cover.png
 ---
 
 # Hello Sentilis
@@ -118,7 +116,6 @@ price: 29
 currency: USD
 status: published
 visibility: public
-image: cover.png
 ---
 
 # Product Description
