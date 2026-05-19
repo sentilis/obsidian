@@ -12,6 +12,8 @@
 <a href="https://www.npmjs.com/package/@sentilis/core" target="_blank"><img src="https://img.shields.io/npm/v/@sentilis/core.svg?label=%40sentilis%2Fcore" alt="Core Version" /></a>
 </p>
 
+![cover.png](cover.png)
+> How your entry looks on Sentilis. [See it live →](https://sentilis.me/en)
 
 ## Description
 
@@ -20,7 +22,7 @@ The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your
 > Looking for ready-made starting points? Browse the [Awesome Templates for Bio, Market & Press](https://sentilis.me/en/press/awesome-templates-bio-market-press-6a0b2e43550ca18de60a7d8a).
 
 
-![cover](cover.jpeg)
+
 
 
 ## Features
