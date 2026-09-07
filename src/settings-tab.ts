@@ -3,12 +3,17 @@ import {
 	PluginSettingTab,
 	Setting,
 	setIcon,
+	type SettingDefinitionItem,
 } from 'obsidian';
 
 import { SentilisPluginInterface } from './plugin';
+import { SentilisProfile } from './auth/types';
 import { AddProfileModal } from './auth/add-modal';
 import { ConfirmModal } from './ui/confirm-modal';
 import { SENTILIS_VIEW_TYPE } from './events';
+
+const DEFAULT_PROFILE_KEY =
+	'defaultProfileId';
 
 export class SentilisSettingTab extends PluginSettingTab {
 	plugin: SentilisPluginInterface;
@@ -23,33 +28,143 @@ export class SentilisSettingTab extends PluginSettingTab {
 	}
 
 	private static readonly LOGIN_URL =
-		'https://id.sentilis.me/login?utm_source=obsidian&utm_medium=plugin&utm_campaign=settings&utm_content=login';
+		'https://sentilis.me/login?utm_source=obsidian&utm_medium=plugin&utm_campaign=settings&utm_content=login';
 
 	private static readonly SIGNUP_URL =
-		'https://id.sentilis.me/signup?utm_source=obsidian&utm_medium=plugin&utm_campaign=settings&utm_content=signup';
+		'https://sentilis.me/signup?utm_source=obsidian&utm_medium=plugin&utm_campaign=settings&utm_content=signup';
 
-	display(): void {
-		const { containerEl } = this;
+	getSettingDefinitions(): SettingDefinitionItem[] {
+		const profiles =
+			this.plugin.settings.profiles;
 
-		containerEl.empty();
+		return [
+			{
+				type: 'group',
+				heading: this.plugin.t(
+					'settings.account'
+				),
+				items: [
+					{
+						name: this.plugin.t(
+							'settings.yourAccount'
+						),
+						desc: this.plugin.t(
+							'settings.accountDesc'
+						),
+						render: (setting) => {
+							this.renderAccountLinks(
+								setting
+							);
+						},
+					},
+					{
+						name: this.plugin.t(
+							'settings.defaultProfile'
+						),
+						desc: this.plugin.t(
+							'settings.defaultProfileDesc'
+						),
+						// Nothing to pick from until a
+						// profile exists.
+						visible: () =>
+							this.plugin.settings
+								.profiles.length >
+							0,
+						control: {
+							type: 'dropdown',
+							key: DEFAULT_PROFILE_KEY,
+							options:
+								Object.fromEntries(
+									profiles.map(
+										(
+											profile
+										) => [
+											profile.id,
+											profile.username,
+										]
+									)
+								),
+							defaultValue: '',
+						},
+					},
+				],
+			},
+			{
+				type: 'list',
+				heading: this.plugin.t(
+					'settings.profiles'
+				),
+				addItem: {
+					name: this.plugin.t(
+						'addProfile.addNewToken'
+					),
+					action: () => {
+						this.openAddProfile();
+					},
+				},
+				onDelete: (index) => {
+					this.confirmDeleteProfile(
+						index
+					);
+				},
+				items: profiles.map(
+					(profile) => ({
+						name: profile.username,
+						render: (setting) => {
+							this.renderProfileRow(
+								setting,
+								profile
+							);
+						},
+					})
+				),
+			},
+		];
+	}
 
-		new Setting(containerEl)
-			.setName(
-				this.plugin.t('settings.account')
-			)
-			.setHeading();
+	getControlValue(key: string): unknown {
+		if (key === DEFAULT_PROFILE_KEY) {
+			return (
+				this.plugin.settings
+					.defaultProfileId ?? ''
+			);
+		}
 
-		new Setting(containerEl)
-			.setName(
-				this.plugin.t(
-					'settings.yourAccount'
-				)
-			)
-			.setDesc(
-				this.plugin.t(
-					'settings.accountDesc'
-				)
-			)
+		return super.getControlValue(key);
+	}
+
+	async setControlValue(
+		key: string,
+		value: unknown
+	): Promise<void> {
+		if (key !== DEFAULT_PROFILE_KEY) {
+			await super.setControlValue(
+				key,
+				value
+			);
+
+			return;
+		}
+
+		this.plugin.settings.defaultProfileId =
+			typeof value === 'string' &&
+			value !== ''
+				? value
+				: null;
+
+		await this.plugin.saveSettings();
+
+		// The active marker on each profile row
+		// is derived from this value.
+		this.update();
+
+		this.refreshViews();
+	}
+
+	private renderAccountLinks(
+		setting: Setting
+	): void {
+		setting
 			.addButton((button) => {
 				button
 					.setButtonText(
@@ -84,220 +199,146 @@ export class SentilisSettingTab extends PluginSettingTab {
 						);
 					});
 			});
+	}
 
-		if (
-			this.plugin.settings.profiles
-				.length > 0
-		) {
-			new Setting(containerEl)
-				.setName(
-					this.plugin.t(
-						'settings.defaultProfile'
-					)
-				)
-				.setDesc(
-					this.plugin.t(
-						'settings.defaultProfileDesc'
-					)
-				)
-				.addDropdown((dropdown) => {
-					this.plugin.settings.profiles.forEach(
-						(profile) => {
-							dropdown.addOption(
-								profile.id,
-								profile.username
-							);
-						}
-					);
+	private renderProfileRow(
+		setting: Setting,
+		profile: SentilisProfile
+	): void {
+		const isActive =
+			profile.id ===
+			this.plugin.settings
+				.defaultProfileId;
 
-					dropdown
-						.setValue(
-							this.plugin.settings
-								.defaultProfileId ||
-								''
+		setting.settingEl.addClass(
+			'sentilis-profile-setting'
+		);
+
+		const nameEl = setting.nameEl;
+
+		nameEl.empty();
+
+		const iconEl = nameEl.createSpan({
+			cls: isActive
+				? 'sentilis-profile-icon is-active'
+				: 'sentilis-profile-icon',
+			attr: {
+				'aria-label': isActive
+					? this.plugin.t(
+							'settings.active'
 						)
-						.onChange(
-							async (value) => {
-								this.plugin.settings.defaultProfileId =
-									value;
+					: '',
+				title: isActive
+					? this.plugin.t(
+							'settings.active'
+						)
+					: '',
+			},
+		});
 
-								await this.plugin.saveSettings();
+		setIcon(
+			iconEl,
+			isActive
+				? 'check-circle-2'
+				: 'circle'
+		);
 
-								this.display();
+		nameEl.createSpan({
+			text: profile.username,
+			cls: 'sentilis-profile-username',
+		});
 
-								this.app.workspace
-									.getLeavesOfType(
-										SENTILIS_VIEW_TYPE
-									)
-									.forEach(
-										(leaf) => {
-											const view =
-												leaf.view as {
-													render?: () => void;
-												};
+		nameEl.createSpan({
+			text: ' - ',
+			cls: 'sentilis-profile-sep',
+		});
 
-											if (
-												typeof view.render ===
-												'function'
-											) {
-												view.render();
-											}
-										}
-									);
-							}
-						);
-				});
+		nameEl.createSpan({
+			text: `${profile.token.slice(
+				0,
+				8
+			)}…`,
+			cls: 'sentilis-profile-token',
+		});
+
+		setting.descEl.remove();
+	}
+
+	private openAddProfile(): void {
+		new AddProfileModal(
+			this.app,
+			this.plugin,
+			() => {
+				this.update();
+			}
+		).open();
+	}
+
+	private confirmDeleteProfile(
+		index: number
+	): void {
+		const profile =
+			this.plugin.settings.profiles[
+				index
+			];
+
+		if (!profile) {
+			return;
 		}
 
-		new Setting(containerEl)
-			.setName(
-				this.plugin.t(
-					'settings.profiles'
-				)
-			)
-			.setHeading()
-			.addExtraButton((button) => {
-				button
-					.setIcon('plus')
-					.setTooltip(
-						this.plugin.t(
-							'addProfile.addNewToken'
-						)
-					)
-					.onClick(() => {
-						new AddProfileModal(
-							this.app,
-							this.plugin,
-							() => {
-								this.display();
-							}
-						).open();
-					});
-			});
+		new ConfirmModal(this.app, {
+			title: this.plugin.t(
+				'common.confirmDeleteTitle'
+			),
+			message: `${this.plugin.t(
+				'settings.deleteProfile'
+			)}: ${profile.username}`,
+			confirmLabel: this.plugin.t(
+				'rowElement.delete'
+			),
+			cancelLabel: this.plugin.t(
+				'common.cancel'
+			),
+			danger: true,
+			onConfirm: async () => {
+				this.plugin.settings.profiles =
+					this.plugin.settings.profiles.filter(
+						(item) =>
+							item.id !== profile.id
+					);
 
-		this.plugin.settings.profiles.forEach(
-			(profile) => {
-				const isActive =
-					profile.id ===
+				if (
 					this.plugin.settings
-						.defaultProfileId;
+						.defaultProfileId ===
+					profile.id
+				) {
+					this.plugin.settings.defaultProfileId =
+						null;
+				}
 
-				const profileSetting =
-					new Setting(containerEl);
+				await this.plugin.saveSettings();
 
-				profileSetting.settingEl.addClass(
-					'sentilis-profile-setting'
-				);
+				this.update();
+			},
+		}).open();
+	}
 
-				const nameEl =
-					profileSetting.nameEl;
+	private refreshViews(): void {
+		this.app.workspace
+			.getLeavesOfType(
+				SENTILIS_VIEW_TYPE
+			)
+			.forEach((leaf) => {
+				const view = leaf.view as {
+					render?: () => void;
+				};
 
-				nameEl.empty();
-
-				const iconEl =
-					nameEl.createSpan({
-						cls: isActive
-							? 'sentilis-profile-icon is-active'
-							: 'sentilis-profile-icon',
-						attr: {
-							'aria-label': isActive
-								? this.plugin.t(
-										'settings.active'
-									)
-								: '',
-							title: isActive
-								? this.plugin.t(
-										'settings.active'
-									)
-								: '',
-						},
-					});
-
-				setIcon(
-					iconEl,
-					isActive
-						? 'check-circle-2'
-						: 'circle'
-				);
-
-				nameEl.createSpan({
-					text: profile.username,
-					cls: 'sentilis-profile-username',
-				});
-
-				nameEl.createSpan({
-					text: ' - ',
-					cls: 'sentilis-profile-sep',
-				});
-
-				nameEl.createSpan({
-					text: `${profile.token.slice(
-						0,
-						8
-					)}…`,
-					cls: 'sentilis-profile-token',
-				});
-
-				profileSetting.descEl.remove();
-
-				profileSetting.addExtraButton(
-					(button) => {
-						button
-							.setIcon('trash-2')
-							.setTooltip(
-								this.plugin.t(
-									'settings.deleteProfile'
-								)
-							)
-							.onClick(() => {
-								new ConfirmModal(
-									this.app,
-									{
-										title:
-											this.plugin.t(
-												'common.confirmDeleteTitle'
-											),
-										message: `${this.plugin.t(
-											'settings.deleteProfile'
-										)}: ${profile.username}`,
-										confirmLabel:
-											this.plugin.t(
-												'rowElement.delete'
-											),
-										cancelLabel:
-											this.plugin.t(
-												'common.cancel'
-											),
-										danger: true,
-										onConfirm:
-											async () => {
-												this.plugin.settings.profiles =
-													this.plugin.settings.profiles.filter(
-														(item) =>
-															item.id !==
-															profile.id
-													);
-
-												if (
-													this.plugin
-														.settings
-														.defaultProfileId ===
-													profile.id
-												) {
-													this.plugin.settings.defaultProfileId =
-														null;
-												}
-
-												await this.plugin.saveSettings();
-
-												this.display();
-											},
-									}
-								).open();
-							});
-					}
-				);
-			}
-		);
+				if (
+					typeof view.render ===
+					'function'
+				) {
+					view.render();
+				}
+			});
 	}
 }

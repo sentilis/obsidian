@@ -48,7 +48,7 @@ export const translations = {
 			yourAccount: 'Your account',
 
 			accountDesc:
-				"Sign in to your Sentilis account at id.sentilis.me. Your API token is available in your profile and can be added below.",
+				"Sign in to your Sentilis account at sentilis.me. Your API token is available in your profile and can be added below.",
 
 			logIn: 'Log in',
 
@@ -307,7 +307,7 @@ export const translations = {
 			yourAccount: 'Tu cuenta',
 
 			accountDesc:
-				'Inicia sesión en tu cuenta de Sentilis en id.sentilis.me. Tu token de API está disponible en tu perfil y puedes agregarlo abajo.',
+				'Inicia sesión en tu cuenta de Sentilis en sentilis.me. Tu token de API está disponible en tu perfil y puedes agregarlo abajo.',
 
 			logIn: 'Iniciar sesión',
 

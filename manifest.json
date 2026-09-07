@@ -1,8 +1,8 @@
 {
 	"id": "sentilis",
 	"name": "Sentilis",
-	"version": "1.4.0",
-	"minAppVersion": "1.5.0",
+	"version": "1.4.1",
+	"minAppVersion": "1.13.0",
 	"description": "Publish content from your vault to the Sentilis platform.",
 	"author": "Sentilis",
 	"authorUrl": "https://about.sentilis.me",

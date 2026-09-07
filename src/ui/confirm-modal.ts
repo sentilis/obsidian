@@ -58,7 +58,7 @@ export class ConfirmModal extends Modal {
 				});
 
 				if (this.opts.danger) {
-					btn.setWarning();
+					btn.setDestructive();
 				}
 			});
 	}

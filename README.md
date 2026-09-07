@@ -35,7 +35,7 @@ The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your
 
 ### 1. Get your API token
 
-[Sign in](https://id.sentilis.me/login?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=login) or [sign up](https://id.sentilis.me/signup?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=signup) at **id.sentilis.me** and copy the token from your profile. Keep it private.
+[Sign in](https://sentilis.me/login?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=login) or [sign up](https://sentilis.me/signup?utm_source=obsidian&utm_medium=readme&utm_campaign=plugin-docs&utm_content=signup) at **sentilis.me** and copy the token from your profile. Keep it private.
 
 ### 2. Configure a Profile
 
