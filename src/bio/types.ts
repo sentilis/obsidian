@@ -1,4 +1,4 @@
-import type { RestClient } from '@sentilis/core';
+import type { RestClient } from '@sentilis/cli';
 
 type BioListResponse = Awaited<ReturnType<RestClient['listBio']>>;
 type BioInfoResponse = Awaited<ReturnType<RestClient['getBio']>>;

@@ -20,6 +20,17 @@ jobs:
                   node-version-file: ".nvmrc"
                   cache: "npm"
 
+            - name: Reject local path dependencies in the lockfile
+              run: |
+                  # A `file:` entry means someone committed a lockfile produced
+                  # by testing against a local tarball or `npm link`. It installs
+                  # fine on their machine and breaks everywhere else — the exact
+                  # failure that left phantom entries across these repos before.
+                  if grep -nE '"(resolved|version)": "file:' package-lock.json; then
+                    echo "package-lock.json pins a local path dependency — release-blocking."
+                    exit 1
+                  fi
+
             - run: npm ci
 
             - name: Lint

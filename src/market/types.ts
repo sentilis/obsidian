@@ -1,4 +1,4 @@
-import type { RestClient } from '@sentilis/core';
+import type { RestClient } from '@sentilis/cli';
 
 type ProductListResponse = Awaited<ReturnType<RestClient['listProduct']>>;
 
