@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-<a href="./LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
+<a href="./LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License" /></a>
 <a href="https://obsidian.md" target="_blank"><img src="https://img.shields.io/badge/obsidian-1.5.0%2B-7c3aed.svg" alt="Obsidian Version" /></a>
-<a href="https://www.npmjs.com/package/@sentilis/core" target="_blank"><img src="https://img.shields.io/npm/v/@sentilis/core.svg?label=%40sentilis%2Fcore" alt="Core Version" /></a>
+<a href="https://www.npmjs.com/package/@sentilis/cli" target="_blank"><img src="https://img.shields.io/npm/v/@sentilis/cli.svg?label=%40sentilis%2Fcli" alt="SDK Version" /></a>
 </p>
 
 ![cover.png](cover.png)
@@ -17,7 +17,7 @@
 
 ## Description
 
-The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your vault. Built on top of [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core), it lets you author, validate, and publish **Press** articles, **Market** products, and **Bio** profiles from your Markdown notes — without ever leaving Obsidian.
+The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your vault. Built on the Sentilis SDK from [`@sentilis/cli`](https://www.npmjs.com/package/@sentilis/cli), it lets you author, validate, and publish **Press** articles, **Market** products, and **Bio** profiles from your Markdown notes — without ever leaving Obsidian.
 
 > Looking for ready-made starting points? Browse the [Awesome Templates for Bio, Market & Press](https://sentilis.me/en/press/awesome-templates-bio-market-press-6a0b2e43550ca18de60a7d8a).
 
@@ -187,4 +187,6 @@ For issues and feature requests, please use the GitHub Issues page.
 
 ## License
 
-Sentilis Obsidian Plugin is [MIT licensed](./LICENSE).
+Sentilis Obsidian Plugin is licensed under the [GNU Affero General Public License v3.0](./LICENSE).
+
+The released `main.js` bundles the Sentilis SDK, which is AGPL-licensed, so the distributed plugin is a combined work under the same terms.

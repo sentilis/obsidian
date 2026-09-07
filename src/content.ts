@@ -1,4 +1,4 @@
-import { RestClient } from '@sentilis/core';
+import { RestClient } from '@sentilis/cli';
 
 import { PressItem } from './press/types';
 import { ProductItem } from './market/types';

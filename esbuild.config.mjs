@@ -1,6 +1,5 @@
 import esbuild from "esbuild";
 import process from "process";
-import { builtinModules } from 'node:module';
 
 const banner =
 `/*
@@ -31,7 +30,14 @@ const context = await esbuild.context({
 		"@lezer/common",
 		"@lezer/highlight",
 		"@lezer/lr",
-		...builtinModules],
+	],
+	// Node builtins are deliberately NOT externalized, and `platform` is
+	// deliberately left at its "browser" default. manifest.json declares
+	// isDesktopOnly: false, so this bundle has to load on mobile where
+	// there is no Node runtime. Marking builtins external would let a
+	// `node:fs` import slip through as a require() that throws only on a
+	// phone; leaving them unresolvable turns the same mistake into a build
+	// error here. scripts/check-mobile-safe.mjs backstops the artifact.
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",

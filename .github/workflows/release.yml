@@ -28,6 +28,17 @@ jobs:
                     exit 1
                   fi
 
+            - name: Reject local path dependencies in the lockfile
+              run: |
+                  # A `file:` entry means someone committed a lockfile produced
+                  # by testing against a local tarball or `npm link`. It installs
+                  # fine on their machine and breaks everywhere else — the exact
+                  # failure that left phantom entries across these repos before.
+                  if grep -nE '"(resolved|version)": "file:' package-lock.json; then
+                    echo "package-lock.json pins a local path dependency — release-blocking."
+                    exit 1
+                  fi
+
             - run: npm ci
 
             - name: Lint
@@ -39,7 +50,10 @@ jobs:
             - name: Package plugin zip
               run: |
                   mkdir -p sentilis
-                  cp main.js manifest.json styles.css sentilis/
+                  # LICENSE ships with the plugin: main.js bundles the
+                  # AGPL-licensed Sentilis SDK, so the distributed artifact is a
+                  # combined work and carries its license terms with it.
+                  cp main.js manifest.json styles.css LICENSE sentilis/
                   zip -r sentilis.zip sentilis
 
             - name: Verify manifest version matches tag
@@ -59,4 +73,4 @@ jobs:
                   gh release create "$TAG" \
                     --title "$TAG" \
                     --generate-notes \
-                    main.js manifest.json styles.css sentilis.zip
+                    main.js manifest.json styles.css LICENSE sentilis.zip

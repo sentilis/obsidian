@@ -91,6 +91,8 @@ export default tseslint.config(
 		"esbuild.config.mjs",
 		"eslint.config.js",
 		"version-bump.mjs",
+		// Node-side build tooling, same category as the two above.
+		"scripts",
 		"versions.json",
 		"main.js",
 	]),

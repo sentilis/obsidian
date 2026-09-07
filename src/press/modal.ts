@@ -5,7 +5,7 @@ import {
 	setIcon,
 } from 'obsidian';
 
-import { RestClient } from '@sentilis/core';
+import { RestClient } from '@sentilis/cli';
 
 import { PressDetailItem } from './types';
 
