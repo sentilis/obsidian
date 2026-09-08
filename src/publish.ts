@@ -226,6 +226,9 @@ export class PublishService {
 				summary.push({ label: 'Slug', value: metadata.slug });
 				summary.push({ label: 'Status', value: metadata.status });
 				summary.push({ label: 'Visibility', value: metadata.visibility });
+				if (metadata.cover) {
+					summary.push({ label: 'Cover', value: metadata.cover });
+				}
 				if (result.hidden.length > 0) {
 					summary.push({
 						label: 'Children',

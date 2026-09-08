@@ -304,7 +304,7 @@ export class PressDetailModal extends Modal {
 		);
 
 		createMetaItem(
-			'globe',
+			visibilityIconName(item.visibility),
 			this.plugin.t(
 				'pressDetail.visibility'
 			),

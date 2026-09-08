@@ -29,8 +29,6 @@ export function visibilityIconName(
 			return 'globe';
 		case 'private':
 			return 'lock';
-		case 'protected':
-			return 'shield';
 		case 'prime':
 			return 'crown';
 		default:

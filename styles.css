@@ -326,10 +326,6 @@
 	color: var(--text-faint);
 }
 
-.sentilis-visibility-protected {
-	color: var(--color-yellow, #d4a017);
-}
-
 .sentilis-visibility-prime {
 	color: var(--color-purple, #a880ff);
 }

@@ -18,7 +18,7 @@ export class ContentService {
 
 		try {
 			const res = await new RestClient(profile.token).listPress({
-				visibility: ['public', 'private', 'protected', 'prime'],
+				visibility: ['public', 'private', 'prime'],
 			});
 			return res.data;
 		} catch (error) {
@@ -46,7 +46,7 @@ export class ContentService {
 
 		try {
 			const res = await new RestClient(profile.token).listBio({
-				visibility: ['public', 'private', 'protected', 'prime'],
+				visibility: ['public', 'private', 'prime'],
 			});
 			return res.data;
 		} catch (error) {
