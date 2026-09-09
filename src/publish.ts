@@ -251,8 +251,8 @@ export class PublishService {
 				});
 				summary.push({ label: 'Status', value: metadata.status });
 				summary.push({ label: 'Visibility', value: metadata.visibility });
-				if (metadata.image) {
-					summary.push({ label: 'Image', value: metadata.image });
+				if (metadata.cover) {
+					summary.push({ label: 'Cover', value: metadata.cover });
 				}
 				if (metadata.attachment) {
 					summary.push({ label: 'Attachment', value: metadata.attachment });
@@ -364,7 +364,6 @@ export class PublishService {
 function severityFor(code: ValidationIssue['code']): DryRunSeverity {
 	switch (code) {
 		case 'MULTIPLE_COVER_CANDIDATES':
-		case 'MULTIPLE_IMAGE_CANDIDATES':
 		case 'MULTIPLE_AVATAR_CANDIDATES':
 			return 'warning';
 		default:
