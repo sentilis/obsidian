@@ -269,6 +269,18 @@ export class PublishService {
 				summary.push({ label: 'Slug', value: metadata.slug });
 				summary.push({ label: 'Status', value: metadata.status });
 				summary.push({ label: 'Visibility', value: metadata.visibility });
+				if (metadata.password) {
+					// La contraseña no se enseña: lo que importa antes de
+					// publicar es saber que la entrada va cerrada y que las
+					// subpáginas se cierran con ella.
+					summary.push({
+						label: 'Password',
+						value:
+							result.hidden.length > 0
+								? 'set (inherited by sub-pages)'
+								: 'set',
+					});
+				}
 				if (metadata.cover) {
 					summary.push({ label: 'Cover', value: metadata.cover });
 				}

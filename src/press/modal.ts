@@ -304,7 +304,9 @@ export class PressDetailModal extends Modal {
 		);
 
 		createMetaItem(
-			visibilityIconName(item.visibility),
+			// `private` ya lleva candado, así que una privada con contraseña
+			// necesita otra señal: es la que se abre con un enlace.
+			item.hasPassword ? 'key' : visibilityIconName(item.visibility),
 			this.plugin.t(
 				'pressDetail.visibility'
 			),
@@ -394,9 +396,11 @@ export class PressDetailModal extends Modal {
 
 					setIcon(
 						childVisIcon,
-						visibilityIconName(
-							child.visibility
-						)
+						child.hasPassword
+							? 'key'
+							: visibilityIconName(
+									child.visibility
+								)
 					);
 				}
 
