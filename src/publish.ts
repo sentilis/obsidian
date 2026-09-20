@@ -364,7 +364,9 @@ export class PublishService {
 
 	private toDryRunIssue(issue: ValidationIssue): DryRunIssue {
 		return {
-			severity: severityFor(issue.code),
+			// El SDK ya marca lo que es un aviso; su criterio manda, y esta
+			// tabla local queda solo para los códigos que no lo traen.
+			severity: issue.severity === 'warning' ? 'warning' : severityFor(issue.code),
 			message: `${issue.file ? `[${issue.file}] ` : ''}${this.translateIssue(issue)}`,
 			code: issue.code,
 		};
@@ -442,6 +444,7 @@ export class PublishService {
  * walker output is fatal (error); a few advisory codes — like multiple
  * auto-detect candidates — are surfaced as warnings.
  */
+/** Respaldo para los issues que no traen `severity` del SDK. */
 function severityFor(code: ValidationIssue['code']): DryRunSeverity {
 	switch (code) {
 		case 'MULTIPLE_COVER_CANDIDATES':
