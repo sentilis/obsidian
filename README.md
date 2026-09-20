@@ -157,8 +157,9 @@ Develop directly from the repository by symlinking it into your vault.
     $ git clone https://github.com/sentilis/sentilis.obsidian.git
     $ cd sentilis.obsidian
     $ npm install
-    $ npm run build
+    $ npm run dev
     ```
+    `npm run dev` watches the sources and writes `main.js` at the repo root, next to `manifest.json` and `styles.css` — the layout Obsidian loads through the symlink below.
 2.  Symlink the repo into your vault's plugins folder:
 
     **Linux / macOS**
@@ -174,6 +175,8 @@ Develop directly from the repository by symlinking it into your vault.
       -Path "C:\Vault\.obsidian\plugins\sentilis" `
       -Target "C:\Projects\sentilis.obsidian"
     ```
+
+To produce the distributable artifact instead, run `npm run build`: it type-checks, bundles for production and leaves `main.js`, `manifest.json`, `styles.css` and `LICENSE` in `dist/` — the exact folder that ships in `sentilis.zip`, ready to copy into a vault.
 
 
 ## Stay in touch

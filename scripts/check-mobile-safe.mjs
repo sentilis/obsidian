@@ -19,13 +19,16 @@
 import { readFileSync } from "node:fs";
 import { builtinModules } from "node:module";
 
-const BUNDLE = "main.js";
+// Defaults to the production artifact built by `npm run build`. Pass a path
+// to audit another bundle, e.g. `node scripts/check-mobile-safe.mjs main.js`
+// for the one watch mode writes at the repo root.
+const BUNDLE = process.argv[2] ?? "dist/main.js";
 
 let bundle;
 try {
   bundle = readFileSync(BUNDLE, "utf8");
 } catch {
-  console.error(`ERROR: ${BUNDLE} not found — run the esbuild step first.`);
+  console.error(`ERROR: ${BUNDLE} not found — run \`npm run build\` first.`);
   process.exit(1);
 }
 

@@ -1,4 +1,5 @@
 import esbuild from "esbuild";
+import { copyFileSync, mkdirSync, rmSync } from "node:fs";
 import process from "process";
 
 const banner =
@@ -9,6 +10,14 @@ if you want to view the source, please visit the github repository of this plugi
 `;
 
 const prod = (process.argv[2] === "production");
+
+const OUTDIR = "dist";
+
+// The shippable plugin folder: what a user drops into
+// <vault>/.obsidian/plugins/sentilis/, and what release.yml zips. LICENSE
+// travels with it because main.js bundles the AGPL-licensed Sentilis SDK,
+// so the artifact is a combined work under those terms.
+const PLUGIN_ASSETS = ["manifest.json", "styles.css", "LICENSE"];
 
 const context = await esbuild.context({
 	banner: {
@@ -43,12 +52,24 @@ const context = await esbuild.context({
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
-	outfile: "main.js",
+	// Production builds go to dist/ alongside the rest of the plugin files.
+	// Watch mode keeps writing main.js at the repo root: development happens
+	// through a symlink of this repo into the vault's plugins folder (see
+	// README), where Obsidian expects main.js next to manifest.json.
+	outfile: prod ? `${OUTDIR}/main.js` : "main.js",
 	minify: prod,
 });
 
 if (prod) {
+	rmSync(OUTDIR, { recursive: true, force: true });
+	mkdirSync(OUTDIR, { recursive: true });
+
 	await context.rebuild();
+
+	for (const asset of PLUGIN_ASSETS) {
+		copyFileSync(asset, `${OUTDIR}/${asset}`);
+	}
+
 	process.exit(0);
 } else {
 	await context.watch();

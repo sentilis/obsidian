@@ -49,11 +49,11 @@ jobs:
 
             - name: Package plugin zip
               run: |
-                  mkdir -p sentilis
-                  # LICENSE ships with the plugin: main.js bundles the
-                  # AGPL-licensed Sentilis SDK, so the distributed artifact is a
-                  # combined work and carries its license terms with it.
-                  cp main.js manifest.json styles.css LICENSE sentilis/
+                  # dist/ is the artifact `npm run build` produces: main.js,
+                  # manifest.json, styles.css and LICENSE. The license ships
+                  # with the plugin because main.js bundles the AGPL-licensed
+                  # Sentilis SDK, making the artifact a combined work.
+                  cp -r dist sentilis
                   zip -r sentilis.zip sentilis
 
             - name: Verify manifest version matches tag
@@ -70,7 +70,10 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   TAG="${GITHUB_REF_NAME}"
+                  # Uploaded assets keep their basenames, so the release still
+                  # exposes main.js/manifest.json/styles.css at its root — the
+                  # layout Obsidian's plugin directory expects.
                   gh release create "$TAG" \
                     --title "$TAG" \
                     --generate-notes \
-                    main.js manifest.json styles.css LICENSE sentilis.zip
+                    dist/main.js dist/manifest.json dist/styles.css dist/LICENSE sentilis.zip
