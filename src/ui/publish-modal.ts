@@ -1,7 +1,7 @@
 import { App, Modal, TFile, TFolder, setIcon } from 'obsidian';
 
 import { SentilisPluginInterface } from '../plugin';
-import { DryRunReport } from '../publish';
+import { DryRunReport, PublishResult, PublishService } from '../publish';
 
 const SEVERITY_ICON = {
 	error: 'x-circle',
@@ -9,7 +9,58 @@ const SEVERITY_ICON = {
 	info: 'info',
 } as const;
 
-type Kind = 'press' | 'market' | 'bio';
+type Kind = 'press' | 'market' | 'bio' | 'gallery';
+
+/**
+ * Un tipo de contenido, en un sitio. Antes esto eran tres ternarios anidados
+ * repetidos en cuatro puntos del fichero; con el cuarto tipo dejaban de leerse.
+ */
+interface KindSpec {
+	label: string;
+	dryRun(
+		service: PublishService,
+		target: TFile | TFolder,
+	): Promise<DryRunReport>;
+	publish(
+		service: PublishService,
+		target: TFile | TFolder,
+	): Promise<PublishResult>;
+}
+
+const KINDS: Record<Kind, KindSpec> = {
+	press: {
+		label: 'Press',
+		dryRun: (service, target) => service.dryRunPress(target),
+		publish: (service, target) =>
+			target instanceof TFile
+				? service.publishPressFile(target)
+				: service.publishPressFolder(target),
+	},
+	market: {
+		label: 'Market',
+		dryRun: (service, target) => service.dryRunMarket(target),
+		publish: (service, target) =>
+			target instanceof TFile
+				? service.publishMarketFile(target)
+				: service.publishMarketFolder(target),
+	},
+	bio: {
+		label: 'Bio',
+		dryRun: (service, target) => service.dryRunBio(target),
+		publish: (service, target) =>
+			target instanceof TFile
+				? service.publishBioFile(target)
+				: service.publishBioFolder(target),
+	},
+	gallery: {
+		label: 'Gallery',
+		dryRun: (service, target) => service.dryRunGallery(target),
+		publish: (service, target) =>
+			target instanceof TFile
+				? service.publishGalleryFile(target)
+				: service.publishGalleryFolder(target),
+	},
+};
 
 interface PublishModalOptions {
 	kind: Kind;
@@ -52,12 +103,7 @@ export class PublishModal extends Modal {
 	private async runDryRun() {
 		const service = this.plugin.publishService;
 		const target = this.opts.target;
-		const report =
-			this.opts.kind === 'press'
-				? await service.dryRunPress(target)
-				: this.opts.kind === 'market'
-					? await service.dryRunMarket(target)
-					: await service.dryRunBio(target);
+		const report = await KINDS[this.opts.kind].dryRun(service, target);
 
 		const hasFatal = report.issues.some((i) => i.severity === 'error');
 		this.state = { phase: 'ready', report, canPublish: !hasFatal };
@@ -74,18 +120,7 @@ export class PublishModal extends Modal {
 		const { target, kind } = this.opts;
 		const service = this.plugin.publishService;
 
-		const result =
-			kind === 'press'
-				? target instanceof TFile
-					? await service.publishPressFile(target)
-					: await service.publishPressFolder(target)
-				: kind === 'market'
-					? target instanceof TFile
-						? await service.publishMarketFile(target)
-						: await service.publishMarketFolder(target)
-					: target instanceof TFile
-						? await service.publishBioFile(target)
-						: await service.publishBioFolder(target);
+		const result = await KINDS[kind].publish(service, target);
 
 		this.state = result.ok
 			? { phase: 'published', report, url: result.url }
@@ -114,12 +149,7 @@ export class PublishModal extends Modal {
 		// Header
 		const header = contentEl.createDiv({ cls: 'sentilis-premium-header' });
 		const headerIcon = header.createSpan({ cls: 'sentilis-status-icon' });
-		const kindLabel =
-			this.opts.kind === 'press'
-				? 'Press'
-				: this.opts.kind === 'market'
-					? 'Market'
-					: 'Bio';
+		const kindLabel = KINDS[this.opts.kind].label;
 		header.createEl('h1', {
 			text: `${kindLabel} · ${this.opts.target.name}`,
 			cls: 'sentilis-premium-title',

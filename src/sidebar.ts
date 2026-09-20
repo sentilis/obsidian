@@ -14,6 +14,7 @@ import { PressDetailModal } from './press/modal';
 import { ProductDetailModal } from './market/modal';
 
 import { BioDetailModal } from './bio/modal';
+import { GalleryDetailModal } from './gallery/modal';
 
 import { ConfirmModal } from './ui/confirm-modal';
 
@@ -27,8 +28,11 @@ import {
 export class SentilisSidebarView extends ItemView {
 	plugin: SentilisPluginInterface;
 
-	activeTab: 'press' | 'market' | 'bio' =
-		'press';
+	activeTab:
+		| 'press'
+		| 'market'
+		| 'gallery'
+		| 'bio' = 'press';
 
 	private renderVersion = 0;
 
@@ -127,12 +131,15 @@ export class SentilisSidebarView extends ItemView {
 		const currentProfile =
 			this.plugin.getCurrentProfile();
 
+		const TAB_LABELS = {
+			press: 'Press',
+			market: 'Market',
+			gallery: 'Gallery',
+			bio: 'Bio',
+		} as const;
+
 		const sectionLabel =
-			this.activeTab === 'press'
-				? 'Press'
-				: this.activeTab === 'market'
-					? 'Market'
-					: 'Bio';
+			TAB_LABELS[this.activeTab];
 
 		contentEl.createEl('h2', {
 			text: currentProfile
@@ -181,6 +188,18 @@ export class SentilisSidebarView extends ItemView {
 				}`,
 			});
 
+		const galleryTab =
+			tabsEl.createDiv({
+				text: 'Gallery',
+
+				cls: `sentilis-tab ${
+					this.activeTab ===
+					'gallery'
+						? 'is-active'
+						: ''
+				}`,
+			});
+
 		const bioTab =
 			tabsEl.createDiv({
 				text: 'Bio',
@@ -208,6 +227,16 @@ export class SentilisSidebarView extends ItemView {
 			() => {
 				this.activeTab =
 					'market';
+
+				void this.render();
+			}
+		);
+
+		galleryTab.addEventListener(
+			'click',
+			() => {
+				this.activeTab =
+					'gallery';
 
 				void this.render();
 			}
@@ -260,6 +289,9 @@ export class SentilisSidebarView extends ItemView {
 
 		const products =
 			await this.plugin.contentService.getRecentProducts();
+
+		const galleries =
+			await this.plugin.contentService.getRecentGalleries();
 
 		const bios =
 			await this.plugin.contentService.getRecentBios();
@@ -530,6 +562,140 @@ export class SentilisSidebarView extends ItemView {
 					status: item.status,
 					visibility: item.visibility,
 					meta: [item.kind, item.category],
+				});
+			});
+		}
+
+		if (
+			this.activeTab === 'gallery'
+		) {
+			if (galleries.length === 0) {
+				this.renderEmpty(
+					contentEl,
+					'image',
+					this.plugin.t(
+						'sidebar.noGalleries'
+					)
+				);
+			}
+
+			galleries.forEach((item) => {
+				const itemEl =
+					contentEl.createDiv({
+						cls: 'sentilis-list-item',
+					});
+
+				itemEl.addEventListener(
+					'click',
+					() => {
+						new GalleryDetailModal(
+							this.app,
+							this.plugin,
+							item
+						).open();
+					}
+				);
+
+				itemEl.addEventListener(
+					'contextmenu',
+					(event) => {
+						event.preventDefault();
+
+						const menu =
+							new Menu();
+
+						menu.addItem(
+							(itemMenu) => {
+								itemMenu
+									.setTitle(
+										this.plugin.t(
+											'rowElement.showDetails'
+										)
+									)
+									.setIcon(
+										'info'
+									)
+									.onClick(
+										() => {
+											new GalleryDetailModal(
+												this.app,
+												this.plugin,
+												item
+											).open();
+										}
+									);
+							}
+						);
+
+						menu.addItem(
+							(itemMenu) => {
+								itemMenu
+									.setTitle(
+										this.plugin.t(
+											'rowElement.openLink'
+										)
+									)
+									.setIcon(
+										'external-link'
+									)
+									.onClick(
+										() => {
+											if (
+												item.url
+											) {
+												window.open(
+													item.url,
+													'_blank'
+												);
+											}
+										}
+									);
+							}
+						);
+
+						menu.addItem(
+							(itemMenu) => {
+								itemMenu
+									.setTitle(
+										this.plugin.t(
+											'rowElement.delete'
+										)
+									)
+									.setIcon(
+										'trash'
+									)
+									.setSection(
+										'danger'
+									)
+									.onClick(
+										() => {
+											this.confirmDelete(
+												item.name,
+												async () => {
+													await this.plugin.publishService.deleteGallery(
+														item.id
+													);
+												}
+											);
+										}
+									);
+							}
+						);
+
+						menu.showAtMouseEvent(
+							event
+						);
+					}
+				);
+
+				this.renderListRow(itemEl, {
+					title: item.name,
+					status: item.status,
+					visibility: item.visibility,
+					meta: [
+						item.category,
+						`${item.imageCount}`,
+					],
 				});
 			});
 		}

@@ -27,7 +27,7 @@ The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your
 
 ## Features
 
-- **Press, Market, and Bio publishing** — push Markdown notes to Sentilis in one click.
+- **Press, Market, Gallery, and Bio publishing** — push Markdown notes to Sentilis in one click.
 - **Multi-profile support** — switch between Sentilis accounts on the fly.
 - **Obsidian-native assets** — `![[embeds]]`, standard Markdown images, frontmatter covers, and file attachments resolve automatically.
 
@@ -57,7 +57,7 @@ Run the command:
 Sentilis: Open sidebar
 ```
 
-The sidebar lists your Press, Market, and Bio entries for the active profile, with quick actions to view details, open the online URL, copy the link/ID, or delete an item.
+The sidebar lists your Press, Market, Gallery, and Bio entries for the active profile, with quick actions to view details, open the online URL, copy the link/ID, or delete an item.
 
 ### 4. Publish Bio
 
@@ -131,6 +131,42 @@ Right-click the file and choose:
 
 ```text
 Sentilis → Publish to Market
+```
+
+
+### 7. Publish Gallery
+
+Hang images on your public profile. The images *are* the entry, not an
+illustration of it: a note without at least one image is rejected.
+
+One note carries one or more images — with one it is a single piece, with
+several a series, and they hang in the order they appear. Everything but `name`
+is optional.
+
+```md
+---
+name: Morning Light, nº3
+year: "2024"
+medium: Digital photography
+dimensions: 60 × 40 cm
+edition: 2/25
+series: Interiors
+status: published
+visibility: public
+---
+
+Three rooms, the same hour.
+
+![A beam of light crosses an empty room](./attachments/room-01.png "I. Seven in the morning")
+```
+
+The **alt text** describes the work for anyone who cannot see it; the **quoted
+title** is the caption printed underneath it on the site.
+
+Right-click the file and choose:
+
+```text
+Sentilis → Publish to Gallery
 ```
 
 

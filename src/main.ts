@@ -91,7 +91,9 @@ export default class SentilisPlugin extends Plugin {
 
 					const submenu = (item as MenuItemWithSubmenu).setSubmenu();
 
-					const openPublish = (kind: "press" | "market" | "bio") => {
+					const openPublish = (
+						kind: "press" | "market" | "bio" | "gallery",
+					) => {
 						if (
 							!(file instanceof TFile && file.extension === "md") &&
 							!(file instanceof TFolder)
@@ -120,6 +122,13 @@ export default class SentilisPlugin extends Plugin {
 							.setTitle(this.t("publish.market"))
 							.setIcon("shopping-bag")
 							.onClick(() => openPublish("market"));
+					});
+
+					submenu.addItem((subItem) => {
+						subItem
+							.setTitle(this.t("publish.gallery"))
+							.setIcon("image")
+							.onClick(() => openPublish("gallery"));
 					});
 
 					submenu.addItem((subItem) => {

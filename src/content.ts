@@ -3,6 +3,7 @@ import { RestClient } from '@sentilis/cli';
 import { PressItem } from './press/types';
 import { ProductItem } from './market/types';
 import { BioItem } from './bio/types';
+import { GalleryItem } from './gallery/types';
 import { SentilisPluginInterface } from './plugin';
 
 export class ContentService {
@@ -33,6 +34,21 @@ export class ContentService {
 
 		try {
 			const res = await new RestClient(profile.token).listProduct();
+			return res.data;
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
+	}
+
+	async getRecentGalleries(): Promise<GalleryItem[]> {
+		const profile = this.plugin.getCurrentProfile();
+		if (!profile) return [];
+
+		try {
+			const res = await new RestClient(profile.token).listGallery({
+				visibility: ['public', 'private', 'prime'],
+			});
 			return res.data;
 		} catch (error) {
 			console.error(error);

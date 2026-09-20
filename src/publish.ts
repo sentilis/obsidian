@@ -26,6 +26,11 @@ import {
 	publishBio,
 } from '@sentilis/cli/bio';
 
+import {
+	createGallery,
+	publishGallery,
+} from '@sentilis/cli/gallery';
+
 export type DryRunSeverity = 'error' | 'warning' | 'info';
 
 export interface DryRunIssue {
@@ -36,7 +41,7 @@ export interface DryRunIssue {
 
 export interface DryRunReport {
 	target: string;
-	kind: 'press' | 'market' | 'bio';
+	kind: 'press' | 'market' | 'bio' | 'gallery';
 	summary: Array<{
 		label: string;
 		value: string;
@@ -206,10 +211,48 @@ export class PublishService {
 		return this.dryRun('bio', target);
 	}
 
+	// ---------- Gallery ----------
+
+	async publishGalleryFile(file: TFile): Promise<PublishResult> {
+		return this.publishGalleryPath(file.path);
+	}
+
+	async publishGalleryFolder(folder: TFolder): Promise<PublishResult> {
+		return this.publishGalleryPath(folder.path);
+	}
+
+	private async publishGalleryPath(path: string): Promise<PublishResult> {
+		if (this.plugin.networkService.getStatus()) {
+			return { ok: false, error: this.plugin.t('publish.offline') };
+		}
+		const profile = this.plugin.getCurrentProfile();
+		if (!profile) {
+			return { ok: false, error: this.plugin.t('publish.noProfile') };
+		}
+
+		try {
+			const result = await createGallery(this.fs, path);
+			const response = await publishGallery(
+				new RestClient(profile.token),
+				this.fs,
+				result,
+			);
+			this.plugin.app.workspace.trigger(SENTILIS_EVENTS.PRESS_PUBLISHED);
+			return { ok: true, url: response.data.url };
+		} catch (error) {
+			console.error('[Sentilis] publish failed:', error);
+			return { ok: false, error: (error as Error)?.message ?? 'Unknown error' };
+		}
+	}
+
+	async dryRunGallery(target: TFile | TFolder): Promise<DryRunReport> {
+		return this.dryRun('gallery', target);
+	}
+
 	// ---------- Dry run ----------
 
 	private async dryRun(
-		kind: 'press' | 'market' | 'bio',
+		kind: 'press' | 'market' | 'bio' | 'gallery',
 		target: TFile | TFolder,
 	): Promise<DryRunReport> {
 		const path = this.targetPath(target);
@@ -257,6 +300,28 @@ export class PublishService {
 				if (metadata.attachment) {
 					summary.push({ label: 'Attachment', value: metadata.attachment });
 				}
+				for (const i of result.issues) {
+					issues.push(this.toDryRunIssue(i));
+				}
+			} else if (kind === 'gallery') {
+				const result = await createGallery(this.fs, path, {
+					collectErrors: true,
+				});
+				const { metadata } = result.main;
+				summary.push({ label: 'Name', value: metadata.name });
+				summary.push({ label: 'Slug', value: metadata.slug });
+				summary.push({
+					label: 'Images',
+					value: String(result.main.images.length),
+				});
+				if (metadata.year) {
+					summary.push({ label: 'Year', value: metadata.year });
+				}
+				if (metadata.series) {
+					summary.push({ label: 'Series', value: metadata.series });
+				}
+				summary.push({ label: 'Status', value: metadata.status });
+				summary.push({ label: 'Visibility', value: metadata.visibility });
 				for (const i of result.issues) {
 					issues.push(this.toDryRunIssue(i));
 				}
@@ -335,6 +400,22 @@ export class PublishService {
 			return false;
 		}
 		new Notice(this.plugin.t('publish.marketDeleted'));
+		this.plugin.app.workspace.trigger(SENTILIS_EVENTS.PRESS_PUBLISHED);
+		return true;
+	}
+
+	async deleteGallery(id: string): Promise<boolean> {
+		const profile = this.requireProfile();
+		if (!profile) return false;
+		try {
+			await new RestClient(profile.token).removeGallery(id);
+		} catch (error) {
+			new Notice(
+				`${this.plugin.t('publish.deleteFailed')}: ${(error as Error)?.message}`,
+			);
+			return false;
+		}
+		new Notice(this.plugin.t('publish.galleryDeleted'));
 		this.plugin.app.workspace.trigger(SENTILIS_EVENTS.PRESS_PUBLISHED);
 		return true;
 	}

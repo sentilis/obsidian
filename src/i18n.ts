@@ -115,6 +115,8 @@ export const translations = {
 
 			bio: 'Publish to Bio',
 
+			gallery: 'Publish to Gallery',
+
 			offline: 'Cannot publish while offline',
 
 			marketMissingName:
@@ -140,6 +142,9 @@ export const translations = {
 
 			bioDeleted:
 				'Bio deleted successfully',
+
+			galleryDeleted:
+				'Gallery entry taken down',
 		},
 
 		sidebar: {
@@ -148,6 +153,9 @@ export const translations = {
 			noProducts: 'No products yet',
 
 			noBios: 'No bios yet',
+
+			noGalleries:
+				'Nothing hanging yet',
 
 			recentPress:
 				'Recent Press',
@@ -166,6 +174,18 @@ export const translations = {
 				openLink: 'Open Link',
 				delete: 'Delete',
 			}
+		},
+
+		galleryModal: {
+			title: 'Gallery Entry',
+
+			status: 'Status',
+
+			visibility: 'Visibility',
+
+			images: 'Images',
+
+			series: 'Series',
 		},
 
 		productModal: {
@@ -376,6 +396,8 @@ export const translations = {
 
 			bio: 'Publicar en Bio',
 
+			gallery: 'Publicar en Galería',
+
 			offline: 'No puedes publicar sin conexión',
 			marketMissingName:
 				'Falta frontmatter: name',
@@ -400,6 +422,9 @@ export const translations = {
 
 			bioDeleted:
 				'Bio eliminado correctamente',
+
+			galleryDeleted:
+				'Obra descolgada',
 		},
 
 		sidebar: {
@@ -410,6 +435,9 @@ export const translations = {
 			noProducts: 'Sin productos',
 
 			noBios: 'Sin bios',
+
+			noGalleries:
+				'Todavía no hay obra colgada',
 
 			recentPress:
 				'Publicaciones recientes',
@@ -429,6 +457,18 @@ export const translations = {
 				openLink: 'Abrir Enlace',
 				delete: 'Eliminar',
 			}
+		},
+
+		galleryModal: {
+			title: 'Entrada de galería',
+
+			status: 'Estado',
+
+			visibility: 'Visibilidad',
+
+			images: 'Imágenes',
+
+			series: 'Serie',
 		},
 
 		productModal: {
