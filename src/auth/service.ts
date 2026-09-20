@@ -1,4 +1,4 @@
-import { validateToken } from '@sentilis/cli';
+import { validateToken } from '@sentilis/sdk';
 
 export class AuthService {
 	async authenticateToken(

@@ -1,6 +1,6 @@
 import { App, Modal, Notice, setIcon } from 'obsidian';
 
-import { RestClient } from '@sentilis/cli';
+import { RestClient } from '@sentilis/sdk';
 
 import { BioDetailItem } from './types';
 

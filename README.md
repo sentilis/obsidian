@@ -9,7 +9,7 @@
 <p align="center">
 <a href="./LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License" /></a>
 <a href="https://obsidian.md" target="_blank"><img src="https://img.shields.io/badge/obsidian-1.5.0%2B-7c3aed.svg" alt="Obsidian Version" /></a>
-<a href="https://www.npmjs.com/package/@sentilis/cli" target="_blank"><img src="https://img.shields.io/npm/v/@sentilis/cli.svg?label=%40sentilis%2Fcli" alt="SDK Version" /></a>
+<a href="https://www.npmjs.com/package/@sentilis/sdk" target="_blank"><img src="https://img.shields.io/npm/v/@sentilis/sdk.svg?label=%40sentilis%2Fsdk" alt="SDK Version" /></a>
 </p>
 
 ![cover.png](cover.png)
@@ -17,7 +17,7 @@
 
 ## Description
 
-The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your vault. Built on the Sentilis SDK from [`@sentilis/cli`](https://www.npmjs.com/package/@sentilis/cli), it lets you author, validate, and publish **Press** articles, **Market** products, and **Bio** profiles from your Markdown notes — without ever leaving Obsidian.
+The **Sentilis Obsidian Plugin** brings the Sentilis platform directly into your vault. Built on the Sentilis SDK, [`@sentilis/sdk`](https://www.npmjs.com/package/@sentilis/sdk), it lets you author, validate, and publish **Press** articles, **Market** products, and **Bio** profiles from your Markdown notes — without ever leaving Obsidian.
 
 > Looking for ready-made starting points? Browse the [Awesome Templates for Bio, Market & Press](https://sentilis.me/en/press/awesome-templates-bio-market-press-6a0b2e43550ca18de60a7d8a).
 

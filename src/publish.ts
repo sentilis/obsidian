@@ -9,27 +9,27 @@ import {
 	formatIssue,
 	type FileSystem,
 	type ValidationIssue,
-} from '@sentilis/cli';
+} from '@sentilis/sdk';
 
 import {
 	createPress,
 	publishPress,
-} from '@sentilis/cli/press';
+} from '@sentilis/sdk/press';
 
 import {
 	createProduct,
 	publishProduct,
-} from '@sentilis/cli/market';
+} from '@sentilis/sdk/market';
 
 import {
 	createBio,
 	publishBio,
-} from '@sentilis/cli/bio';
+} from '@sentilis/sdk/bio';
 
 import {
 	createGallery,
 	publishGallery,
-} from '@sentilis/cli/gallery';
+} from '@sentilis/sdk/gallery';
 
 export type DryRunSeverity = 'error' | 'warning' | 'info';
 
@@ -57,7 +57,7 @@ export type PublishResult =
  * Wraps the core walker / publisher and surfaces results in
  * Obsidian-shaped form (Notice toasts, DryRunReport for the modal).
  *
- * All validation rules and defaults now live in `@sentilis/cli` —
+ * All validation rules and defaults now live in `@sentilis/sdk` —
  * this class only resolves the target path, builds the report, and
  * gates uploads on the network / profile state.
  */

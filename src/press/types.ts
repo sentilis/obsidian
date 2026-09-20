@@ -1,4 +1,4 @@
-import type { RestClient } from '@sentilis/cli';
+import type { RestClient } from '@sentilis/sdk';
 
 type PressListResponse = Awaited<ReturnType<RestClient['listPress']>>;
 type PressInfoResponse = Awaited<ReturnType<RestClient['getPress']>>;

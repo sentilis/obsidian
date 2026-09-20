@@ -1,5 +1,5 @@
 import { type App, TFile, TFolder, type Vault } from 'obsidian';
-import type { FileSystem, StatInfo } from '@sentilis/cli';
+import type { FileSystem, StatInfo } from '@sentilis/sdk';
 
 /**
  * Adapter from the Sentilis core `FileSystem` to the Obsidian vault.

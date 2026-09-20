@@ -5,7 +5,7 @@
  * manifest.json declares `isDesktopOnly: false`, so this plugin loads on
  * Obsidian mobile, where there is no Node runtime and a stray
  * `require("fs")` is a hard load failure. The SDK we bundle
- * (`@sentilis/cli`) is isomorphic by design and guards that on its side,
+ * (`@sentilis/sdk`) is isomorphic by design and guards that on its side,
  * but this is the check on the artifact users actually install — the one
  * that would catch a future dependency, or an errant import, before a
  * release does.
