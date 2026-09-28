@@ -50,9 +50,9 @@ jobs:
             - name: Package plugin zip
               run: |
                   # dist/ is the artifact `npm run build` produces: main.js,
-                  # manifest.json, styles.css and LICENSE. The license ships
-                  # with the plugin because main.js bundles the AGPL-licensed
-                  # Sentilis SDK, making the artifact a combined work.
+                  # manifest.json, styles.css, LICENSE (MIT) and
+                  # LICENSE-sentilis-sdk, the AGPL license of the Sentilis SDK
+                  # that main.js bundles.
                   cp -r dist sentilis
                   zip -r sentilis.zip sentilis
 

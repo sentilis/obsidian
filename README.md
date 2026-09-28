@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-<a href="./LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License" /></a>
+<a href="./LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
 <a href="https://obsidian.md" target="_blank"><img src="https://img.shields.io/badge/obsidian-1.5.0%2B-7c3aed.svg" alt="Obsidian Version" /></a>
 <a href="https://www.npmjs.com/package/@sentilis/sdk" target="_blank"><img src="https://img.shields.io/npm/v/@sentilis/sdk.svg?label=%40sentilis%2Fsdk" alt="SDK Version" /></a>
 </p>
@@ -212,7 +212,7 @@ Develop directly from the repository by symlinking it into your vault.
       -Target "C:\Projects\sentilis.obsidian"
     ```
 
-To produce the distributable artifact instead, run `npm run build`: it type-checks, bundles for production and leaves `main.js`, `manifest.json`, `styles.css` and `LICENSE` in `dist/` — the exact folder that ships in `sentilis.zip`, ready to copy into a vault.
+To produce the distributable artifact instead, run `npm run build`: it type-checks, bundles for production and leaves `main.js`, `manifest.json`, `styles.css`, `LICENSE` and `LICENSE-sentilis-sdk` in `dist/` — the exact folder that ships in `sentilis.zip`, ready to copy into a vault.
 
 
 ## Stay in touch
@@ -226,6 +226,6 @@ For issues and feature requests, please use the GitHub Issues page.
 
 ## License
 
-Sentilis Obsidian Plugin is licensed under the [GNU Affero General Public License v3.0](./LICENSE).
+Sentilis Obsidian Plugin is licensed under the [MIT License](./LICENSE).
 
-The released `main.js` bundles the Sentilis SDK, which is AGPL-licensed, so the distributed plugin is a combined work under the same terms.
+The released `main.js` bundles the Sentilis SDK, which is licensed under the GNU Affero General Public License v3.0; its license ships alongside the plugin as `LICENSE-sentilis-sdk`.

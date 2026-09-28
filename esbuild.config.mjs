@@ -14,10 +14,11 @@ const prod = (process.argv[2] === "production");
 const OUTDIR = "dist";
 
 // The shippable plugin folder: what a user drops into
-// <vault>/.obsidian/plugins/sentilis/, and what release.yml zips. LICENSE
-// travels with it because main.js bundles the AGPL-licensed Sentilis SDK,
-// so the artifact is a combined work under those terms.
+// <vault>/.obsidian/plugins/sentilis/, and what release.yml zips. LICENSE is
+// the plugin's own MIT license; main.js also bundles the AGPL-licensed
+// Sentilis SDK, so its license travels with it as LICENSE-sentilis-sdk.
 const PLUGIN_ASSETS = ["manifest.json", "styles.css", "LICENSE"];
+const SDK_LICENSE = "node_modules/@sentilis/sdk/LICENSE";
 
 const context = await esbuild.context({
 	banner: {
@@ -69,6 +70,7 @@ if (prod) {
 	for (const asset of PLUGIN_ASSETS) {
 		copyFileSync(asset, `${OUTDIR}/${asset}`);
 	}
+	copyFileSync(SDK_LICENSE, `${OUTDIR}/LICENSE-sentilis-sdk`);
 
 	process.exit(0);
 } else {
